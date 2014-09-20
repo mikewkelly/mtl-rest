@@ -4,7 +4,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
-public class User extends Model{
+public class User implements Model{
 	int id;
 	String firstName;
 	String lastName;

@@ -2,20 +2,10 @@ package com.makethelistapp.core.model;
 
 import java.util.ArrayList;
 
-public class Model {
-	boolean delete() {
-		return false;
-	}
+public interface Model {
+	boolean delete();
 
-	boolean save() {
-		return false;
-	}
+	boolean save();
 	
-	public static Model getByPK(int primaryKey) {
-		return null;
-	}
-	
-	public static Model getByAttributes(ArrayList<String> attributes) {
-		return null;
-	}
+
 }
