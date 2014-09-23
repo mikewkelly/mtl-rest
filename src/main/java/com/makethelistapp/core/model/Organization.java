@@ -1,8 +1,6 @@
 package com.makethelistapp.core.model;
 
-import java.util.ArrayList;
-
-public class Organization implements Model{
+public class Organization {
 	
 	int id;
 	String name;
@@ -15,38 +13,67 @@ public class Organization implements Model{
 	String contactEmail;
 	String status;
 	
-	public Organization(String name, String street, String city, String province, String country, String contactName, String contactPhone, String contactEmail, String status) {
-		this.id = 0; //for auto-increment
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
 		this.name = name;
+	}
+	public String getStreet() {
+		return street;
+	}
+	public void setStreet(String street) {
 		this.street = street;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
 		this.city = city;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
 		this.province = province;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
 		this.country = country;
+	}
+	public String getContactName() {
+		return contactName;
+	}
+	public void setContactName(String contactName) {
 		this.contactName = contactName;
+	}
+	public String getContactPhone() {
+		return contactPhone;
+	}
+	public void setContactPhone(String contactPhone) {
 		this.contactPhone = contactPhone;
+	}
+	public String getContactEmail() {
+		return contactEmail;
+	}
+	public void setContactEmail(String contactEmail) {
 		this.contactEmail = contactEmail;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
 		this.status = status;
-		
-		//get id from db for new row:
-		//call save() -> insert new row into db. 
-		//get id of last inserted row from db
-		//assign it to this.id
 	}
 	
-	public boolean delete() {
-		return false;
-	}
 
-	public boolean save() {
-		return false;
-	}
-	
-	public static Model getByPK(int primaryKey) {
-		return null;
-	}
-	
-	public static Model getByAttributes(ArrayList<String> attributes) {
-		
-		return null;
-	}
 }
