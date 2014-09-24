@@ -46,6 +46,8 @@ dependencies {
     compile 'org.springframework.security:spring-security-web:3.2.0.M2'
     compile 'org.springframework.security:spring-security-core:3.2.0.M2'
     compile 'org.springframework.security:spring-security-config:3.2.0.M2'
+    
+    compile files('lib/mysql-connector-java-5.0.8-bin.jar')
 
     compile 'org.slf4j:slf4j-api:1.7.5'
     runtime 'org.slf4j:slf4j-jdk14:1.7.5'

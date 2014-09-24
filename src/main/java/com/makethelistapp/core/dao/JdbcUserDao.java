@@ -6,4 +6,6 @@ public interface JdbcUserDao {
 
 	public User getUserByEmail(String email);
 	
+	public User getUserById(int id);
+	
 }
