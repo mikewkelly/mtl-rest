@@ -31,9 +31,7 @@ public class UserAuthController {
 	public User getUser(@PathVariable("idUser") int idUser) {
 		
 		JdbcUserDaoImpl jdbcUserDao = new JdbcUserDaoImpl();
-		User user = jdbcUserDao.getUserById(idUser);
-		user.setLastName("HERE");
-		
+		User user = jdbcUserDao.getUserById(idUser);	
 		return user;
 	}
 	

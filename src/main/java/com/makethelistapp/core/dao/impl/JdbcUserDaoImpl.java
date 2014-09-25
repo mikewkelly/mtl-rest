@@ -41,7 +41,6 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 		         user.setFirstName(rs.getString("userFirstName"));
 		         user.setLastName(rs.getString("userLastName"));
 		         user.setStatus(rs.getString("userStatus"));
-		         user.setUsername(rs.getString("userUsername"));
 		         user.setPassword(rs.getString("userPassword"));
 		         
 		         
@@ -95,7 +94,6 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 		         user.setFirstName(rs.getString("userFirstName"));
 		         user.setLastName(rs.getString("userLastName"));
 		         user.setStatus(rs.getString("userStatus"));
-		         user.setUsername(rs.getString("userUsername"));
 		         user.setPassword(rs.getString("userPassword"));
 		         
 		         

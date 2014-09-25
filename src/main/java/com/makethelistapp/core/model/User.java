@@ -9,6 +9,8 @@ public class User {
 	String firstName;
 	String lastName;
 	String email;
+	String password;
+	String status;
 	String street = null;
 	String city = null;
 	String province = null;
@@ -17,9 +19,6 @@ public class User {
 	String phone = null;
 	Date birthdate = null;
 	Timestamp lastActive = null;
-	String status;
-	String username;
-	String password;
 	
 	public int getId() {
 		return id;
@@ -98,12 +97,6 @@ public class User {
 	}
 	public void setStatus(String status) {
 		this.status = status;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
 	}
 	public String getPassword() {
 		return password;
