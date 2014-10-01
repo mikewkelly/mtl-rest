@@ -8,8 +8,12 @@ public class Reservation {
 	int freeCover;
 	int halfCover;
 	int numGuests;
+	int payCover;
 	String note;
 	int glistId;
+	int userId; //optional
+	boolean arrived;
+	String status;
 	
 	public int getId() {
 		return id;
@@ -47,6 +51,12 @@ public class Reservation {
 	public void setNumGuests(int numGuests) {
 		this.numGuests = numGuests;
 	}
+	public int getPayCover() {
+		return payCover;
+	}
+	public void setPayCover(int payCover) {
+		this.payCover = payCover;
+	}
 	public String getNote() {
 		return note;
 	}
@@ -59,5 +69,23 @@ public class Reservation {
 	public void setGlistId(int glistId) {
 		this.glistId = glistId;
 	}
-
+	public int getUserId() {
+		return userId;
+	}
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+	public boolean isArrived() {
+		return arrived;
+	}
+	public void setArrived(boolean arrived) {
+		this.arrived = arrived;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 }

@@ -11,6 +11,7 @@ public class Event {
 	String recurring;
 	String status;
 	int venueId;
+	
 	public int getId() {
 		return id;
 	}

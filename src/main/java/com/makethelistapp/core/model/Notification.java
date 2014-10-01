@@ -6,6 +6,8 @@ public class Notification {
 	String type;
 	Boolean seen;
 	Boolean messageWith;
+	int userId;
+	int messageId;
 	
 	public int getId() {
 		return id;
@@ -30,6 +32,18 @@ public class Notification {
 	}
 	public void setMessageWith(Boolean messageWith) {
 		this.messageWith = messageWith;
+	}
+	public int getUserId() {
+		return userId;
+	}
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+	public int getMessageId() {
+		return messageId;
+	}
+	public void setMessageId(int messageId) {
+		this.messageId = messageId;
 	}
 
 }

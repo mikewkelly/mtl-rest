@@ -6,6 +6,7 @@ public class ConnectedTo {
 	int userId;
 	int organizationId;
 	String type;
+	
 	public int getId() {
 		return id;
 	}
