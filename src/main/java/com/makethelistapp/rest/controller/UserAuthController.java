@@ -35,14 +35,6 @@ public class UserAuthController {
 		return user;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	public void setTest() {
-		
-		JdbcUserDaoImpl jdbcUserDao = new JdbcUserDaoImpl();
-		jdbcUserDao.setTest();
-		
-	}
 	
 //	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 //	@ResponseBody
