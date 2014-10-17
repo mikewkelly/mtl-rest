@@ -1,5 +1,7 @@
 package com.makethelistapp.rest.controller;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,10 @@ public class UserAuthController {
 	@ResponseBody
 	public User getUser(@PathVariable("idUser") int idUser) {
 		
-		JdbcUserDaoImpl jdbcUserDao = new JdbcUserDaoImpl();
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
+		
+		//JdbcUserDaoImpl jdbcUserDao = new JdbcUserDaoImpl();
 		User user = jdbcUserDao.getUserById(idUser);	
 		return user;
 	}

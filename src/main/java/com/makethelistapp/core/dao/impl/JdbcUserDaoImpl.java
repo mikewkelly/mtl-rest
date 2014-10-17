@@ -5,24 +5,33 @@ import com.makethelistapp.core.model.User;
 
 import java.sql.*;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class JdbcUserDaoImpl implements JdbcUserDao {
 
-
-	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	static final String DB_URL = "jdbc:mysql://localhost/mtl";
-	
-	static final String USER = "root";
-	static final String PASS = "root";
+	@Autowired //may need to change @Autowired for multiple datasources
+	private DataSource dataSource;
 
 	
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
 	public User getUserById(int id) {
 		User user = new User();
 		Connection conn = null;
 		
 		   try{
-		      Class.forName("com.mysql.jdbc.Driver");
-
-		      conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			   
+			  conn = dataSource.getConnection();
 
 		      PreparedStatement ps = conn.prepareStatement("SELECT * FROM user WHERE idUser = ?");
 		      ps.setInt(1, id);
@@ -43,9 +52,6 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 		         user.setLastName(rs.getString("userLastName"));
 		         user.setStatus(rs.getString("userStatus"));
 		         user.setPassword(rs.getString("userPassword"));
-		         
-		         
-			   
 		      }
 		      rs.close();
 		      conn.close();
