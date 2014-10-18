@@ -1,6 +1,10 @@
 package com.makethelistapp.rest.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,12 +38,34 @@ public class UserAuthController {
 		
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
-		
-		//JdbcUserDaoImpl jdbcUserDao = new JdbcUserDaoImpl();
-		User user = jdbcUserDao.getUserById(idUser);	
+		User user = jdbcUserDao.getUserById(idUser);
+		((ConfigurableApplicationContext)ctx).close();
 		return user;
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, value = "/count")
+	@ResponseBody
+	public int getCount() {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
+		int userCount = jdbcUserDao.getUserCount();
+		((ConfigurableApplicationContext)ctx).close();
+		return userCount;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/users")
+	@ResponseBody
+	public List<User> getUsers() {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
+		List<User> users = jdbcUserDao.getAllUsers();
+		((ConfigurableApplicationContext)ctx).close();
+		return users;
+	}
+	
+
+	
+
 	
 //	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 //	@ResponseBody
