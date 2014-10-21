@@ -19,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	  DataSource dataSource = dataSource();
 	  auth.jdbcAuthentication().dataSource(dataSource)
 		.usersByUsernameQuery(
-			"select username,password, enabled from users where username=?")
+			"select username, userpassword, enabled from user where username=?")
 		.authoritiesByUsernameQuery(
 			"select username, role from user_roles where username=?");
   }
@@ -29,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeUrls()
-        .antMatchers("/**").hasRole("USER")
+        .antMatchers("/**").access("hasRole('ROLE_ADMIN')")
         .anyRequest().authenticated()
         .and()
         .httpBasic();
@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public DriverManagerDataSource dataSource() {
 	    DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
 	    driverManagerDataSource.setDriverClassName("com.mysql.jdbc.Driver");
-	    driverManagerDataSource.setUrl("jdbc:mysql://localhost:3306/test");
+	    driverManagerDataSource.setUrl("jdbc:mysql://localhost:3306/mtl");
 	    driverManagerDataSource.setUsername("root");
 	    driverManagerDataSource.setPassword("root");
 	    return driverManagerDataSource;

@@ -40,7 +40,7 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 	}
 	
 	public User getUserByEmail(String email) {
-		String sql = "SELECT * FROM USER WHERE userEmail = ?";	 
+		String sql = "SELECT * FROM USER WHERE username = ?";	 
 		User user = jdbcTemplate.queryForObject(
 				sql, new Object[] { email }, new UserRowMapper());	
 		return user;
@@ -59,7 +59,7 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 		for (Map<String,Object> row : rows) {
 			User user = new User();
 	        user.setId((int)row.get("idUser")); 
-	        user.setEmail((String)row.get("userEmail"));
+	        user.setUsername((String)row.get("username"));
 	        user.setFirstName((String)row.get("userFirstName"));
 	        user.setLastName((String)row.get("userLastName"));
 	        user.setStatus((String)row.get("userStatus"));
@@ -75,7 +75,7 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			User user = new User();
 	        user.setId(rs.getInt("idUser")); 
-	        user.setEmail(rs.getString("userEmail"));
+	        user.setUsername(rs.getString("username"));
 	        user.setFirstName(rs.getString("userFirstName"));
 	        user.setLastName(rs.getString("userLastName"));
 	        user.setStatus(rs.getString("userStatus"));

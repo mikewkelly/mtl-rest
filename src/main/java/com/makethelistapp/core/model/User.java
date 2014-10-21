@@ -8,7 +8,7 @@ public class User {
 	int id;
 	String firstName;
 	String lastName;
-	String email;
+	String username;
 	String password;
 	String status;
 	String street = null;
@@ -38,11 +38,11 @@ public class User {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public String getEmail() {
-		return email;
+	public String getUsername() {
+		return username;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setUsername(String email) {
+		this.username = email;
 	}
 	public String getStreet() {
 		return street;
