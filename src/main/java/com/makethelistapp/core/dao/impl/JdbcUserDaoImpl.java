@@ -39,7 +39,7 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 		return user;
 	}
 	
-	public User getUserByEmail(String email) {
+	public User getUserByUsername(String email) {
 		String sql = "SELECT * FROM USER WHERE username = ?";	 
 		User user = jdbcTemplate.queryForObject(
 				sql, new Object[] { email }, new UserRowMapper());	

@@ -9,6 +9,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +37,6 @@ public class UserAuthController {
 	@RequestMapping(method = RequestMethod.GET, value = "/{idUser}")
 	@ResponseBody
 	public User getUser(@PathVariable("idUser") int idUser) {
-		
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
 		User user = jdbcUserDao.getUserById(idUser);
@@ -51,6 +52,20 @@ public class UserAuthController {
 		int userCount = jdbcUserDao.getUserCount();
 		((ConfigurableApplicationContext)ctx).close();
 		return userCount;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/me")
+	@ResponseBody
+	public User getMe() {
+		//TODO - Important
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    String name = auth.getName();
+	    
+	    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
+		User user = jdbcUserDao.getUserByUsername(name);
+		((ConfigurableApplicationContext)ctx).close();
+		return user;
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/users")

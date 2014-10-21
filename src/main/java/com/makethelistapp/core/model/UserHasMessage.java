@@ -5,7 +5,7 @@ public class UserHasMessage {
 	int id;
 	int userToId;
 	int userFromId;
-	String message;
+	int messageId;
 	
 	public int getId() {
 		return id;
@@ -25,11 +25,11 @@ public class UserHasMessage {
 	public void setUserFromId(int userFromId) {
 		this.userFromId = userFromId;
 	}
-	public String getMessage() {
-		return message;
+	public int getMessageId() {
+		return messageId;
 	}
-	public void setMessage(String message) {
-		this.message = message;
+	public void setMessageId(int messageId) {
+		this.messageId = messageId;
 	}
 	
 	
