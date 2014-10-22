@@ -24,7 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"select username, role from user_roles where username=?");
   }
   
-  //TODO: change this to match API URI structure
+  //TODO: change this to match API URI structure and allow customers access to 
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {

@@ -62,29 +62,40 @@ public class UserAuthController {
 		return user;
 	}
 	
+//	@RequestMapping(method = RequestMethod.GET, value = "/")
+//	@ResponseBody
+//	public List<Organization> getUserOrganizations() {
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//	    String name = auth.getName();
+//	    
+//	    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+//		JdbcUserRolesDaoImpl jdbcUserRolesDao = ctx.getBean("jdbcUserRolesDaoImpl", JdbcUserRolesDaoImpl.class);
+//		List<UserRoles> userRoles = jdbcUserRolesDao.getAllUserRolesByUsername(name);
+//		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
+//		
+//		List<Organization> organizations = new ArrayList<Organization>();
+//		int length = userRoles.size();
+//		for (int i=0;i<length;i++) {
+//			int orgId = userRoles.get(i).getOrganizationId();
+//			Organization org = jdbcOrganizationDao.getOrganizationById(orgId);
+//			organizations.add(org);
+//		}
+//		((ConfigurableApplicationContext)ctx).close();
+//		return organizations;
+//	}
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@ResponseBody
-	public List<Organization> getUserOrganizations() {
+	public List<UserRoles> getUserOrganizations() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	    String name = auth.getName();
 	    
 	    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcUserRolesDaoImpl jdbcUserRolesDao = ctx.getBean("jdbcUserRolesDaoImpl", JdbcUserRolesDaoImpl.class);
 		List<UserRoles> userRoles = jdbcUserRolesDao.getAllUserRolesByUsername(name);
-		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
-		
-		List<Organization> organizations = new ArrayList<Organization>();
-		int length = userRoles.size();
-		for (int i=0;i<length;i++) {
-			int orgId = userRoles.get(i).getOrganizationId();
-			Organization org = jdbcOrganizationDao.getOrganizationById(orgId);
-			organizations.add(org);
-		}
-		
 		
 		((ConfigurableApplicationContext)ctx).close();
-		
-		return organizations;
+		return userRoles;
 	}
 	
 	
