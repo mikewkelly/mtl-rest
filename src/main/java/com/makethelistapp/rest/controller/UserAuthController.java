@@ -17,42 +17,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.makethelistapp.core.dao.impl.JdbcOrganizationDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcUserDaoImpl;
+import com.makethelistapp.core.dao.impl.JdbcUserRolesDaoImpl;
+import com.makethelistapp.core.model.Organization;
 import com.makethelistapp.core.model.User;
+import com.makethelistapp.core.model.UserRoles;
 
 @Controller
 @RequestMapping("/api/auth")
 public class UserAuthController {
-
-
-//	@RequestMapping(method = RequestMethod.GET, value = "/{idUser}", produces = MediaType.APPLICATION_JSON_VALUE)
-//	ResponseEntity<User> getUserById(@PathVariable int idUser) throws Exception {
-//
-//		JdbcUserDaoImpl jdbcUserDao = new JdbcUserDaoImpl();
+	
+//	@RequestMapping(method = RequestMethod.GET, value = "/{idUser}")
+//	@ResponseBody
+//	public User getUser(@PathVariable("idUser") int idUser) {
+//		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+//		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
 //		User user = jdbcUserDao.getUserById(idUser);
-//		
-//		return new ResponseEntity<User>(user, HttpStatus.OK);
+//		((ConfigurableApplicationContext)ctx).close();
+//		return user;
 //	}
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/{idUser}")
-	@ResponseBody
-	public User getUser(@PathVariable("idUser") int idUser) {
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
-		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
-		User user = jdbcUserDao.getUserById(idUser);
-		((ConfigurableApplicationContext)ctx).close();
-		return user;
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/count")
-	@ResponseBody
-	public int getCount() {
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
-		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
-		int userCount = jdbcUserDao.getUserCount();
-		((ConfigurableApplicationContext)ctx).close();
-		return userCount;
-	}
+//	
+//	@RequestMapping(method = RequestMethod.GET, value = "/count")
+//	@ResponseBody
+//	public int getCount() {
+//		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+//		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
+//		int userCount = jdbcUserDao.getUserCount();
+//		((ConfigurableApplicationContext)ctx).close();
+//		return userCount;
+//	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/me")
 	@ResponseBody
@@ -68,25 +62,41 @@ public class UserAuthController {
 		return user;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/users")
+	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@ResponseBody
-	public List<User> getUsers() {
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
-		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
-		List<User> users = jdbcUserDao.getAllUsers();
+	public List<Organization> getUserOrganizations() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    String name = auth.getName();
+	    
+	    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcUserRolesDaoImpl jdbcUserRolesDao = ctx.getBean("jdbcUserRolesDaoImpl", JdbcUserRolesDaoImpl.class);
+		List<UserRoles> userRoles = jdbcUserRolesDao.getAllUserRolesByUsername(name);
+		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
+		
+		List<Organization> organizations = new ArrayList<Organization>();
+		int length = userRoles.size();
+		for (int i=0;i<length;i++) {
+			int orgId = userRoles.get(i).getOrganizationId();
+			Organization org = jdbcOrganizationDao.getOrganizationById(orgId);
+			organizations.add(org);
+		}
+		
+		
 		((ConfigurableApplicationContext)ctx).close();
-		return users;
+		
+		return organizations;
 	}
 	
-
 	
-
-	
-//	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+//	@RequestMapping(method = RequestMethod.GET, value = "/users")
 //	@ResponseBody
-//	public Person getPerson(@PathVariable("id") Long personId) {
-//	return personDao.getPerson(personId);
-//
+//	public List<User> getUsers() {
+//		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+//		JdbcUserDaoImpl jdbcUserDao = ctx.getBean("jdbcUserDaoImpl", JdbcUserDaoImpl.class);
+//		List<User> users = jdbcUserDao.getAllUsers();
+//		((ConfigurableApplicationContext)ctx).close();
+//		return users;
 //	}
 	
+
 }
