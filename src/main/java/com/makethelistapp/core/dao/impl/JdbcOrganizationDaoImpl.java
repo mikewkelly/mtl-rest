@@ -2,6 +2,9 @@ package com.makethelistapp.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.makethelistapp.core.dao.JdbcOrganizationDao;
 import com.makethelistapp.core.model.Organization;
+import com.makethelistapp.core.model.UserRoles;
 
 @Component
 public class JdbcOrganizationDaoImpl implements JdbcOrganizationDao {
@@ -36,6 +40,28 @@ public class JdbcOrganizationDaoImpl implements JdbcOrganizationDao {
 		Organization organization = jdbcTemplate.queryForObject(
 				sql, new Object[] { id }, new OrganizationRowMapper());	
 		return organization;
+	}
+	
+	public List<Organization> getAllOrganizations() {
+		List<Organization> organizations = new ArrayList<Organization>();
+		String sql = "SELECT * FROM ORGANIZATION";
+		List<Map<String,Object>> rows = jdbcTemplate.queryForList(sql);
+		for (Map<String,Object> row : rows) {
+			Organization organization = new Organization();
+			organization.setId((int) row.get("idOrganization")); 
+			organization.setName((String)row.get("orgName")); 
+			organization.setStreet((String) row.get("orgStreet"));
+			organization.setCity((String) row.get("orgCity"));
+			organization.setProvince((String) row.get("orgProvince"));
+			organization.setCountry((String) row.get("orgCountry"));
+			organization.setContactName((String) row.get("orgContactName"));
+			organization.setContactPhone((String) row.get("orgContactPhone"));
+			organization.setContactEmail((String) row.get("orgContactEmail"));
+			organization.setStatus((String) row.get("orgStatus"));
+			
+	        organizations.add(organization);
+		}
+		return organizations;
 	}
 	
 	public class OrganizationRowMapper implements RowMapper<Organization> {
