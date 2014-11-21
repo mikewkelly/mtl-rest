@@ -24,4 +24,6 @@ public class GList {
 	public void setEventId(int eventId) {
 		this.eventId = eventId;
 	}
+	
+	
 }
