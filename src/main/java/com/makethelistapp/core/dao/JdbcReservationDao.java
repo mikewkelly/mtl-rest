@@ -11,5 +11,7 @@ public interface JdbcReservationDao {
 	public List<Reservation> getAllReservationsByGListId(int glistId);
 	
 	public List<Reservation> getAllReservationsByUserId(int userId);
+	
+	public void updateReservation(Reservation reservation);
 
 }

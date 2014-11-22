@@ -82,6 +82,38 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 		return null;
 	}
 	
+	@Override
+	public void updateReservation(Reservation reservation) {
+		int id = reservation.getId();
+		String firstName = reservation.getFirstName();
+		String lastName = reservation.getLastName();
+		int freeCover = reservation.getFreeCover();
+		int halfCover = reservation.getHalfCover();
+		int numGuests = reservation.getNumGuests();
+		int payCover = reservation.getPayCover();
+		int glistId = reservation.getGlistId();
+		int userId = reservation.getUserId(); //optional
+		boolean arrived = reservation.isArrived();
+		String status = reservation.getStatus();
+		String note = reservation.getNote();
+		
+		String sql = "INSERT INTO reservation VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+//				+ "ON DUPLICATE KEY UPDATE"
+//				+ "reservationFirstName = VALUES(reservationFirstName),"
+//				+ "reservationLastName = VALUES(reservationLastName),"
+//				+ "reservationFreeCover = VALUES(reservationFreeCover),"
+//				+ "reservationHalfCover = VALUES(reservationHalfCover),"
+//				+ "reservationNumGuests = VALUES(reservationNumGuests),"
+//				+ "reservationPayCover = VALUES(reservationPayCover),"
+//				+ "glistId = VALUES(glistId),"
+//				+ "userId = VALUES(userId),"
+//				+ "reservationArrived = VALUES(reservationArrived),"
+//				+ "reservationStatus = VALUES(reservationStatus),"
+//				+ "reservationNote = VALUES(reservationNote)";
+		
+		jdbcTemplate.update(sql, id, firstName, lastName, freeCover, halfCover, numGuests, payCover, glistId, userId, arrived, status, note);
+		
+	}
 	
 	public class ReservationRowMapper implements RowMapper<Reservation> {
 
@@ -104,5 +136,8 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 		}
 		
 	}
+
+
+
 
 }

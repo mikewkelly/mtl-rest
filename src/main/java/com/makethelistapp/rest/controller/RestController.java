@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -129,9 +131,6 @@ public class RestController {
 	@ResponseBody
 	public ResponseEntity<List<Reservation>> getReservations(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId, @PathVariable("idGList") int glistId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
-//		JdbcGListDaoImpl jdbcGListDao = ctx.getBean("jdbcGListDaoImpl", JdbcGListDaoImpl.class);
-//		List<GList> glists = jdbcGListDao.getAllGListsByEventId(eventId);
-//		ResponseEntity<List<GList>> response = new ResponseEntity<List<GList>>(glists, HttpStatus.OK);
 		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
 		List<Reservation> reservations = jdbcReservationDao.getAllReservationsByGListId(glistId);
 		ResponseEntity<List<Reservation>> response = new ResponseEntity<List<Reservation>>(reservations, HttpStatus.OK);
@@ -149,6 +148,23 @@ public class RestController {
 		ResponseEntity<Reservation> response = new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
 		return response;
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations/{idReservation}")
+	@ResponseBody
+	public HttpStatus updateReservation(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId, @PathVariable("idGList") int glistId, @PathVariable("idReservation") int reservationId, @RequestBody Reservation reservation) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
+		
+		try {
+			jdbcReservationDao.updateReservation(reservation);
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
 	}
 	
 	//Maybe
