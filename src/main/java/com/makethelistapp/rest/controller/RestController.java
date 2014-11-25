@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,7 +77,7 @@ public class RestController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/organization")
+	@RequestMapping(method = RequestMethod.POST, value = "/organization")
 	@ResponseBody
 	public ResponseEntity<Integer> addOrganization(@RequestBody Organization organization) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -140,7 +139,7 @@ public class RestController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues")
+	@RequestMapping(method = RequestMethod.POST, value = "/organization/{idOrganization}/venues")
 	@ResponseBody
 	public ResponseEntity<Integer> addVenue(@RequestBody Venue venue) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -179,7 +178,7 @@ public class RestController {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues/{idVenue}/events")
+	@RequestMapping(method = RequestMethod.POST, value = "/organization/{idOrganization}/venues/{idVenue}/events")
 	@ResponseBody
 	public ResponseEntity<List<Event>> getEvents(@PathVariable("idVenue") int venueId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -201,7 +200,7 @@ public class RestController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events")
+	@RequestMapping(method = RequestMethod.POST, value = "/organization/{idOrganization}/venues/{idVenue}/events")
 	@ResponseBody
 	public ResponseEntity<Integer> addEvent(@RequestBody Event event) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -252,7 +251,7 @@ public class RestController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists")
+	@RequestMapping(method = RequestMethod.POST, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists")
 	@ResponseBody
 	public ResponseEntity<Integer> addGlist(@RequestBody GList glist) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -303,7 +302,7 @@ public class RestController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations")
+	@RequestMapping(method = RequestMethod.POST, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations")
 	@ResponseBody
 	public ResponseEntity<Integer> addReservation(@RequestBody Reservation reservation) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
