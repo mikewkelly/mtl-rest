@@ -12,6 +12,6 @@ public interface JdbcReservationDao {
 	
 	public List<Reservation> getAllReservationsByUserId(int userId);
 	
-	public void updateReservation(Reservation reservation);
+	public int updateReservation(Reservation reservation);
 
 }

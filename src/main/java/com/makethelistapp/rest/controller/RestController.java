@@ -78,21 +78,60 @@ public class RestController {
 		return response;
 	}
 	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization")
+	@ResponseBody
+	public ResponseEntity<Integer> addOrganization(@RequestBody Organization organization) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
+
+		try {
+			int newId = jdbcOrganizationDao.updateOrganization(organization);
+			((ConfigurableApplicationContext)ctx).close();
+			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+		}
+	}
 	
-//	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues")
-//	@ResponseBody
-//	public ResponseEntity<Organization> getVenues(@PathVariable("idOrganization") int orgId) {
-//		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
-//		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
-//		Organization organization = jdbcOrganizationDao.getOrganizationById(orgId);
-//		ResponseEntity<Organization> response = new ResponseEntity<Organization>(organization, HttpStatus.OK);
-//		((ConfigurableApplicationContext)ctx).close();
-//		return response;
-//	}
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}")
+	@ResponseBody
+	public HttpStatus updateOrganization(@PathVariable("idOrganization") int orgId, @RequestBody Organization organization) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
+		
+		if (organization.getId() != orgId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			jdbcOrganizationDao.updateOrganization(organization);
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
+	
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues")
+	@ResponseBody
+	public ResponseEntity<List<Venue>> getVenues(@PathVariable("idOrganization") int orgId) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
+		List<Venue> venues = jdbcVenueDao.getAllVenuesByOrganizationId(orgId);
+		ResponseEntity<List<Venue>> response = new ResponseEntity<List<Venue>>(venues, HttpStatus.OK);
+		((ConfigurableApplicationContext)ctx).close();
+		return response;
+	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues/{idVenue}")
 	@ResponseBody
-	public ResponseEntity<Venue> getVenues(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId) {
+	public ResponseEntity<Venue> getVenue(@PathVariable("idVenue") int venueId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
 		Venue venue = jdbcVenueDao.getVenueById(venueId);
@@ -101,11 +140,48 @@ public class RestController {
 		return response;
 	}
 	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues")
+	@ResponseBody
+	public ResponseEntity<Integer> addVenue(@RequestBody Venue venue) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
 
+		try {
+			int newId = jdbcVenueDao.updateVenue(venue);
+			((ConfigurableApplicationContext)ctx).close();
+			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}")
+	@ResponseBody
+	public HttpStatus updateVenue(@PathVariable("idVenue") int venueId, @RequestBody Venue venue) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
+		
+		if (venue.getId() != venueId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			jdbcVenueDao.updateVenue(venue);
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues/{idVenue}/events")
 	@ResponseBody
-	public ResponseEntity<List<Event>> getEvents(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId) {
+	public ResponseEntity<List<Event>> getEvents(@PathVariable("idVenue") int venueId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
 		List<Event> events = jdbcEventDao.getAllEventsByVenueId(venueId);
@@ -114,10 +190,60 @@ public class RestController {
 		return response;
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}")
+	@ResponseBody
+	public ResponseEntity<Event> getEvent(@PathVariable("idEvent") int eventId) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
+		Event event = jdbcEventDao.getEventById(eventId);
+		ResponseEntity<Event> response = new ResponseEntity<Event>(event, HttpStatus.OK);
+		((ConfigurableApplicationContext)ctx).close();
+		return response;
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events")
+	@ResponseBody
+	public ResponseEntity<Integer> addEvent(@RequestBody Event event) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
+		
+		try {
+			int newId = jdbcEventDao.updateEvent(event);
+			((ConfigurableApplicationContext)ctx).close();
+			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}")
+	@ResponseBody
+	public HttpStatus updateEvent(@PathVariable("idEvent") int eventId, @RequestBody Event event) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
+		
+		if (event.getId() != eventId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			jdbcEventDao.updateEvent(event);
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
+	
 
 	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists")
 	@ResponseBody
-	public ResponseEntity<List<GList>> getGLists(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId) {
+	public ResponseEntity<List<GList>> getGLists(@PathVariable("idEvent") int eventId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcGListDaoImpl jdbcGListDao = ctx.getBean("jdbcGListDaoImpl", JdbcGListDaoImpl.class);
 		List<GList> glists = jdbcGListDao.getAllGListsByEventId(eventId);
@@ -125,11 +251,50 @@ public class RestController {
 		((ConfigurableApplicationContext)ctx).close();
 		return response;
 	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists")
+	@ResponseBody
+	public ResponseEntity<Integer> addGlist(@RequestBody GList glist) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcGListDaoImpl jdbcGListDao = ctx.getBean("jdbcGListDaoImpl", JdbcGListDaoImpl.class);
+		
+		try {
+			int newId = jdbcGListDao.updateGList(glist);
+			((ConfigurableApplicationContext)ctx).close();
+			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGlist}")
+	@ResponseBody
+	public HttpStatus updateGlist(@PathVariable("idGlist") int glistId, @RequestBody GList glist) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcGListDaoImpl jdbcGListDao = ctx.getBean("jdbcGListDaoImpl", JdbcGListDaoImpl.class);
+		
+		if (glist.getId() != glistId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			jdbcGListDao.updateGList(glist);
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
 
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations")
 	@ResponseBody
-	public ResponseEntity<List<Reservation>> getReservations(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId, @PathVariable("idGList") int glistId) {
+	public ResponseEntity<List<Reservation>> getReservations(@PathVariable("idGList") int glistId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
 		List<Reservation> reservations = jdbcReservationDao.getAllReservationsByGListId(glistId);
@@ -138,10 +303,27 @@ public class RestController {
 		return response;
 	}
 	
+	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations")
+	@ResponseBody
+	public ResponseEntity<Integer> addReservation(@RequestBody Reservation reservation) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
+		
+		try {
+			int newId = jdbcReservationDao.updateReservation(reservation);
+			((ConfigurableApplicationContext)ctx).close();
+			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+		}
+	}
+	
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations/{idReservation}")
 	@ResponseBody
-	public ResponseEntity<Reservation> getReservation(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId, @PathVariable("idGList") int glistId, @PathVariable("idReservation") int reservationId) {
+	public ResponseEntity<Reservation> getReservation(@PathVariable("idReservation") int reservationId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
 		Reservation reservation = jdbcReservationDao.getReservationById(reservationId);
@@ -152,9 +334,14 @@ public class RestController {
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "/organization/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations/{idReservation}")
 	@ResponseBody
-	public HttpStatus updateReservation(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId, @PathVariable("idGList") int glistId, @PathVariable("idReservation") int reservationId, @RequestBody Reservation reservation) {
+	public HttpStatus updateReservation(@PathVariable("idReservation") int reservationId, @RequestBody Reservation reservation) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
+		
+		if (reservation.getId() != reservationId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
 		
 		try {
 			jdbcReservationDao.updateReservation(reservation);

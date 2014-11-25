@@ -16,5 +16,7 @@ public interface JdbcEventDao {
 	public Event getEventByDateAndVenueId(Timestamp startDate, int venueId);
 	
 	public List<Event> getAllEventsByVenueIdandStatus(int venueId, String status);
+	
+	public int updateEvent(Event event);
 
 }

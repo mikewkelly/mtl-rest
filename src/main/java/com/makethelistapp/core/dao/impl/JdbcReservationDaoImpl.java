@@ -1,5 +1,7 @@
 package com.makethelistapp.core.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,12 +12,16 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.makethelistapp.core.dao.JdbcReservationDao;
 import com.makethelistapp.core.dao.impl.JdbcGListDaoImpl.GListRowMapper;
 import com.makethelistapp.core.model.Reservation;
+import com.mysql.jdbc.Statement;
 
 @Component
 public class JdbcReservationDaoImpl implements JdbcReservationDao {
@@ -83,35 +89,48 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 	}
 	
 	@Override
-	public void updateReservation(Reservation reservation) {
-		int id = reservation.getId();
-		String firstName = reservation.getFirstName();
-		String lastName = reservation.getLastName();
-		int freeCover = reservation.getFreeCover();
-		int halfCover = reservation.getHalfCover();
-		int numGuests = reservation.getNumGuests();
-		int payCover = reservation.getPayCover();
-		int glistId = reservation.getGlistId();
-		int userId = reservation.getUserId(); //optional
-		boolean arrived = reservation.isArrived();
-		String status = reservation.getStatus();
-		String note = reservation.getNote();
+	public int updateReservation(final Reservation reservation) {
+
+		final String sql = "INSERT INTO `reservation` (`idReservation`, `reservationFirstName`, `reservationLastName`, `reservationFreeCover`, `reservationHalfCover`, `reservationNumGuests`, `reservationPayCover`, `glistId`, `userId`, `reservationArrived`, `reservationStatus`,`reservationNote`)  "
+				+ "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
+				+ "ON DUPLICATE KEY UPDATE"
+				+ "`reservationFirstName` = VALUES(`reservationFirstName`),"
+				+ "`reservationLastName` = VALUES(`reservationLastName`),"
+				+ "`reservationFreeCover` = VALUES(`reservationFreeCover`),"
+				+ "`reservationHalfCover` = VALUES(`reservationHalfCover`),"
+				+ "`reservationNumGuests` = VALUES(`reservationNumGuests`),"
+				+ "`reservationPayCover` = VALUES(`reservationPayCover`),"
+				+ "`glistId` = VALUES(`glistId`),"
+				+ "`userId` = VALUES(`userId`),"
+				+ "`reservationArrived` = VALUES(`reservationArrived`),"
+				+ "`reservationStatus` = VALUES(`reservationStatus`),"
+				+ "`reservationNote` = VALUES(`reservationNote`)";
 		
-		String sql = "INSERT INTO reservation VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
-//				+ "ON DUPLICATE KEY UPDATE"
-//				+ "reservationFirstName = VALUES(reservationFirstName),"
-//				+ "reservationLastName = VALUES(reservationLastName),"
-//				+ "reservationFreeCover = VALUES(reservationFreeCover),"
-//				+ "reservationHalfCover = VALUES(reservationHalfCover),"
-//				+ "reservationNumGuests = VALUES(reservationNumGuests),"
-//				+ "reservationPayCover = VALUES(reservationPayCover),"
-//				+ "glistId = VALUES(glistId),"
-//				+ "userId = VALUES(userId),"
-//				+ "reservationArrived = VALUES(reservationArrived),"
-//				+ "reservationStatus = VALUES(reservationStatus),"
-//				+ "reservationNote = VALUES(reservationNote)";
+		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
-		jdbcTemplate.update(sql, id, firstName, lastName, freeCover, halfCover, numGuests, payCover, glistId, userId, arrived, status, note);
+		jdbcTemplate.update(new PreparedStatementCreator() {           
+
+            public PreparedStatement createPreparedStatement(Connection connection)
+                    throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, reservation.getId());
+                ps.setString(2, reservation.getFirstName());
+                ps.setString(3, reservation.getLastName());
+                ps.setInt(4, reservation.getFreeCover());
+                ps.setInt(5, reservation.getHalfCover());
+                ps.setInt(6, reservation.getNumGuests());
+                ps.setInt(7, reservation.getPayCover());
+                ps.setInt(8, reservation.getGlistId());
+                ps.setInt(9, reservation.getUserId());
+                ps.setBoolean(10, reservation.isArrived());
+                ps.setString(11, reservation.getStatus());
+                ps.setString(12, reservation.getNote());
+
+                return ps;
+            }
+        }, keyHolder);
+		
+		return keyHolder.getKey().intValue();
 		
 	}
 	

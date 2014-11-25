@@ -1,5 +1,7 @@
 package com.makethelistapp.core.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -11,12 +13,16 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.makethelistapp.core.dao.JdbcEventDao;
 import com.makethelistapp.core.dao.impl.JdbcOrganizationDaoImpl.OrganizationRowMapper;
 import com.makethelistapp.core.model.Event;
+import com.mysql.jdbc.Statement;
 
 @Component
 public class JdbcEventDaoImpl implements JdbcEventDao {
@@ -77,6 +83,40 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 	public List<Event> getAllEventsByVenueIdandStatus(int venueId, String status) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public int updateEvent(final Event event) {
+		
+		final String sql = "INSERT INTO event(`idEvent`,`eventName`, `eventStart`, `eventEnd`, `eventRecurring`, `eventStatus`, `venueId`)"
+				+ "VALUES(?,?,?,?,?,?,?)"
+				+ "ON DUPLICATE KEY UPDATE"
+				+ "`eventName` = VALUES(`eventName`),"
+				+ "`eventStart` = VALUES(`eventStart`),"
+				+ "`eventEnd` = VALUES(`eventEnd`),"
+				+ "`eventRecurring` = VALUES(`eventRecurring`),"
+				+ "`eventStatus` = VALUES(`eventStatus`),"
+				+ "`venueId` = VALUES(`venueId`)";
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		
+		jdbcTemplate.update(new PreparedStatementCreator() {           
+
+            public PreparedStatement createPreparedStatement(Connection connection)
+                    throws SQLException {
+                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, event.getId());
+                ps.setString(2, event.getName());
+                ps.setTimestamp(3, event.getStart());
+                ps.setTimestamp(4, event.getEnd());
+                ps.setString(5, event.getRecurring());
+                ps.setString(6, event.getStatus());
+                ps.setInt(7, event.getVenueId());
+
+                return ps;
+            }
+        }, keyHolder);
+		
+		return keyHolder.getKey().intValue();
 	}
 	
 	public class EventRowMapper implements RowMapper<Event> {

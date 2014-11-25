@@ -10,5 +10,7 @@ public interface JdbcGListDao {
 	
 	public List<GList> getAllGListsByEventId(int eventId);
 	
+	public int updateGList(GList glist);
+	
 
 }
