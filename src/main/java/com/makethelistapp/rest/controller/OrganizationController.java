@@ -8,9 +8,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,34 +21,37 @@ import com.makethelistapp.core.dao.impl.JdbcEventDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcGListDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcOrganizationDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcReservationDaoImpl;
-import com.makethelistapp.core.dao.impl.JdbcUserDaoImpl;
-import com.makethelistapp.core.dao.impl.JdbcUserRolesDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcVenueDaoImpl;
 import com.makethelistapp.core.model.Event;
 import com.makethelistapp.core.model.GList;
 import com.makethelistapp.core.model.Organization;
 import com.makethelistapp.core.model.Reservation;
-import com.makethelistapp.core.model.User;
-import com.makethelistapp.core.model.UserRoles;
 import com.makethelistapp.core.model.Venue;
-import com.makethelistapp.resource.UserRolesResourceAssembler;
+import com.makethelistapp.rest.resource.EventResourceAssembler;
+import com.makethelistapp.rest.resource.GListResourceAssembler;
+import com.makethelistapp.rest.resource.OrganizationResourceAssembler;
+import com.makethelistapp.rest.resource.ReservationResourceAssembler;
+import com.makethelistapp.rest.resource.VenueResourceAssembler;
+
 
 @Controller
 @RequestMapping("/api/organization")
 public class OrganizationController {
-
-	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}")
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Organization> getOrganization(@PathVariable("idOrganization") int orgId) {
+	public ResponseEntity<Resource<Organization>> getOrganization(@PathVariable("idOrganization") int orgId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
 		Organization organization = jdbcOrganizationDao.getOrganizationById(orgId);
-		ResponseEntity<Organization> response = new ResponseEntity<Organization>(organization, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
+		OrganizationResourceAssembler orgResAss = new OrganizationResourceAssembler();
+		Resource<Organization> resource = orgResAss.toResource(organization);
+		ResponseEntity<Resource<Organization>> response = new ResponseEntity<Resource<Organization>>(resource, HttpStatus.OK);
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/")
+	@RequestMapping(method = RequestMethod.POST, value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Integer> addOrganization(@RequestBody Organization organization) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -66,7 +68,7 @@ public class OrganizationController {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}")
+	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public HttpStatus updateOrganization(@PathVariable("idOrganization") int orgId, @RequestBody Organization organization) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -88,30 +90,37 @@ public class OrganizationController {
 		}
 	}
 	
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues")
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<List<Venue>> getVenues(@PathVariable("idOrganization") int orgId) {
+	public ResponseEntity<List<Resource<Venue>>> getVenues(@PathVariable("idOrganization") int orgId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
 		List<Venue> venues = jdbcVenueDao.getAllVenuesByOrganizationId(orgId);
-		ResponseEntity<List<Venue>> response = new ResponseEntity<List<Venue>>(venues, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
+		VenueResourceAssembler vra = new VenueResourceAssembler();
+		List<Resource<Venue>> resources = new ArrayList<Resource<Venue>>();
+		for (int i=0;i<venues.size();i++) {
+			Resource<Venue> resource = vra.toResource(venues.get(i));
+			resources.add(resource);
+		}
+		ResponseEntity<List<Resource<Venue>>> response = new ResponseEntity<List<Resource<Venue>>>(resources, HttpStatus.OK);
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}")
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Venue> getVenue(@PathVariable("idVenue") int venueId) {
+	public ResponseEntity<Resource<Venue>> getVenue(@PathVariable("idVenue") int venueId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
 		Venue venue = jdbcVenueDao.getVenueById(venueId);
-		ResponseEntity<Venue> response = new ResponseEntity<Venue>(venue, HttpStatus.OK);
+		VenueResourceAssembler vra = new VenueResourceAssembler();
+		Resource<Venue> resource = vra.toResource(venue);
+		ResponseEntity<Resource<Venue>> response = new ResponseEntity<Resource<Venue>>(resource, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues")
+	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Integer> addVenue(@RequestBody Venue venue) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -128,7 +137,7 @@ public class OrganizationController {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}/venues/{idVenue}")
+	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}/venues/{idVenue}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public HttpStatus updateVenue(@PathVariable("idVenue") int venueId, @RequestBody Venue venue) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -150,29 +159,37 @@ public class OrganizationController {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events")
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<List<Event>> getEvents(@PathVariable("idVenue") int venueId) {
+	public ResponseEntity<List<Resource<Event>>> getEvents(@PathVariable("idVenue") int venueId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
 		List<Event> events = jdbcEventDao.getAllEventsByVenueId(venueId);
-		ResponseEntity<List<Event>> response = new ResponseEntity<List<Event>>(events, HttpStatus.OK);
+		EventResourceAssembler era = new EventResourceAssembler();
+		List<Resource<Event>> resources = new ArrayList<Resource<Event>>();
+		for (int i=0;i<events.size();i++) {
+			Resource<Event> resource = era.toResource(events.get(i));
+			resources.add(resource);
+		}
+		ResponseEntity<List<Resource<Event>>> response = new ResponseEntity<List<Resource<Event>>>(resources, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
 		return response;
-	}
+	}	
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}")
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Event> getEvent(@PathVariable("idEvent") int eventId) {
+	public ResponseEntity<Resource<Event>> getEvent(@PathVariable("idEvent") int eventId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
 		Event event = jdbcEventDao.getEventById(eventId);
-		ResponseEntity<Event> response = new ResponseEntity<Event>(event, HttpStatus.OK);
+		EventResourceAssembler era = new EventResourceAssembler();
+		Resource<Event> resource = era.toResource(event);
+		ResponseEntity<Resource<Event>> response = new ResponseEntity<Resource<Event>>(resource, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events")
+	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Integer> addEvent(@RequestBody Event event) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -189,7 +206,7 @@ public class OrganizationController {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}")
+	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public HttpStatus updateEvent(@PathVariable("idEvent") int eventId, @RequestBody Event event) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -211,19 +228,24 @@ public class OrganizationController {
 		}
 	}
 	
-
-	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists")
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<List<GList>> getGLists(@PathVariable("idEvent") int eventId) {
+	public ResponseEntity<List<Resource<GList>>> getGLists(@PathVariable("idEvent") int eventId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcGListDaoImpl jdbcGListDao = ctx.getBean("jdbcGListDaoImpl", JdbcGListDaoImpl.class);
 		List<GList> glists = jdbcGListDao.getAllGListsByEventId(eventId);
-		ResponseEntity<List<GList>> response = new ResponseEntity<List<GList>>(glists, HttpStatus.OK);
+		List<Resource<GList>> resources = new ArrayList<Resource<GList>>();
+		GListResourceAssembler glra = new GListResourceAssembler();
+		for (int i=0;i<glists.size();i++) {
+			Resource<GList> resource = glra.toResource(glists.get(i));
+			resources.add(resource);
+		}
+		ResponseEntity<List<Resource<GList>>> response = new ResponseEntity<List<Resource<GList>>>(resources, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists")
+	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Integer> addGlist(@RequestBody GList glist) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -240,7 +262,7 @@ public class OrganizationController {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGlist}")
+	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGlist}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public HttpStatus updateGlist(@PathVariable("idGlist") int glistId, @RequestBody GList glist) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -263,18 +285,26 @@ public class OrganizationController {
 	}
 
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations")
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<List<Reservation>> getReservations(@PathVariable("idGList") int glistId) {
+	public ResponseEntity<List<Resource<Reservation>>> getReservations(@PathVariable("idGList") int glistId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
 		List<Reservation> reservations = jdbcReservationDao.getAllReservationsByGListId(glistId);
-		ResponseEntity<List<Reservation>> response = new ResponseEntity<List<Reservation>>(reservations, HttpStatus.OK);
+		List<Resource<Reservation>> resources = new ArrayList<Resource<Reservation>>();
+		ReservationResourceAssembler rra = new ReservationResourceAssembler();
+		for (int i=0;i<reservations.size();i++) {
+			Resource<Reservation> resource = rra.toResource(reservations.get(i));
+			resources.add(resource);
+		}
+		ResponseEntity<List<Resource<Reservation>>> response = new ResponseEntity<List<Resource<Reservation>>>(resources, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations")
+	
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Integer> addReservation(@RequestBody Reservation reservation) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -291,19 +321,20 @@ public class OrganizationController {
 		}
 	}
 	
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations/{idReservation}")
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations/{idReservation}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Reservation> getReservation(@PathVariable("idReservation") int reservationId) {
+	public ResponseEntity<Resource<Reservation>> getReservation(@PathVariable("idReservation") int reservationId) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
 		Reservation reservation = jdbcReservationDao.getReservationById(reservationId);
-		ResponseEntity<Reservation> response = new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
+		ReservationResourceAssembler rra = new ReservationResourceAssembler();
+		Resource<Reservation> resource = rra.toResource(reservation);
+		ResponseEntity<Resource<Reservation>> response = new ResponseEntity<Resource<Reservation>>(resource, HttpStatus.OK);
 		((ConfigurableApplicationContext)ctx).close();
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations/{idReservation}")
+	@RequestMapping(method = RequestMethod.PUT, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations/{idReservation}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public HttpStatus updateReservation(@PathVariable("idReservation") int reservationId, @RequestBody Reservation reservation) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");

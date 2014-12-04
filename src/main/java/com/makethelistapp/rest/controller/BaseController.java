@@ -20,7 +20,7 @@ import com.makethelistapp.core.dao.impl.JdbcUserDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcUserRolesDaoImpl;
 import com.makethelistapp.core.model.User;
 import com.makethelistapp.core.model.UserRoles;
-import com.makethelistapp.resource.UserRolesResourceAssembler;
+import com.makethelistapp.rest.resource.UserRolesResourceAssembler;
 
 @Controller
 @RequestMapping("/api/base")

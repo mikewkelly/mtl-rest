@@ -41,7 +41,7 @@ public class JdbcGListDaoImpl implements JdbcGListDao {
 
 	@Override
 	public GList getGListById(int id) {
-		String sql = "SELECT * FROM event WHERE idEvent = ?";
+		String sql = "SELECT * FROM glist WHERE idGList = ?";
 		GList glist = jdbcTemplate.queryForObject(sql, new Object[] { id }, new GListRowMapper());
 		return glist;
 	}
