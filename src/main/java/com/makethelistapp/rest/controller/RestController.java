@@ -1,10 +1,13 @@
 package com.makethelistapp.rest.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,14 +33,35 @@ import com.makethelistapp.core.model.Reservation;
 import com.makethelistapp.core.model.User;
 import com.makethelistapp.core.model.UserRoles;
 import com.makethelistapp.core.model.Venue;
+import com.makethelistapp.resource.UserRolesResourceAssembler;
 
 @Controller
 @RequestMapping("/api")
 public class RestController {
 	
+//	@RequestMapping(method = RequestMethod.GET, value = "/start")
+//	@ResponseBody
+//	public ResponseEntity<List<UserRoles>> getUserOrganizations() {
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//	    String name = auth.getName();
+//	    
+//	    ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+//		JdbcUserRolesDaoImpl jdbcUserRolesDao = ctx.getBean("jdbcUserRolesDaoImpl", JdbcUserRolesDaoImpl.class);
+//		List<UserRoles> userRoles = jdbcUserRolesDao.getAllUserRolesByUsername(name);
+//		//build URI and add to each role
+//		UserRoles ur = userRoles.get(0);
+//		//Link link = new Link("");
+//		UserRolesResourceAssembler gra = new UserRolesResourceAssembler();
+//		Resource<UserRoles> resource = gra.toResource(ur);
+//		
+//		((ConfigurableApplicationContext)ctx).close();
+//		ResponseEntity<List<UserRoles>> response = new ResponseEntity<List<UserRoles>>(userRoles, HttpStatus.OK);
+//		return response;
+//	}
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/start")
 	@ResponseBody
-	public ResponseEntity<List<UserRoles>> getUserOrganizations() {
+	public ResponseEntity<List<Resource<UserRoles>>> getUserOrganizations() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	    String name = auth.getName();
 	    
@@ -45,8 +69,16 @@ public class RestController {
 		JdbcUserRolesDaoImpl jdbcUserRolesDao = ctx.getBean("jdbcUserRolesDaoImpl", JdbcUserRolesDaoImpl.class);
 		List<UserRoles> userRoles = jdbcUserRolesDao.getAllUserRolesByUsername(name);
 		
+		UserRolesResourceAssembler resourceAssembler = new UserRolesResourceAssembler();
+		List<Resource<UserRoles>> resources = new ArrayList<Resource<UserRoles>>();
+		for (int i=0;i<userRoles.size();i++) {
+			UserRoles userRole = userRoles.get(i);
+			Resource<UserRoles> resource = resourceAssembler.toResource(userRole);
+			resources.add(resource);
+		}
+
 		((ConfigurableApplicationContext)ctx).close();
-		ResponseEntity<List<UserRoles>> response = new ResponseEntity<List<UserRoles>>(userRoles, HttpStatus.OK);
+		ResponseEntity<List<Resource<UserRoles>>> response = new ResponseEntity<List<Resource<UserRoles>>>(resources, HttpStatus.OK);
 		return response;
 	}
 	
