@@ -11,7 +11,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import com.makethelistapp.core.dao.impl.JdbcOrganizationDaoImpl;
 import com.makethelistapp.core.model.Organization;
 import com.makethelistapp.core.model.UserRoles;
-import com.makethelistapp.rest.controller.RestController;
+import com.makethelistapp.rest.controller.OrganizationController;
 
 @Component
 public final class UserRolesResourceAssembler implements ResourceAssembler<UserRoles, Resource<UserRoles>> {
@@ -25,7 +25,7 @@ public final class UserRolesResourceAssembler implements ResourceAssembler<UserR
 		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
 		Organization organization = jdbcOrganizationDao.getOrganizationById(orgId);
 		((ConfigurableApplicationContext)ctx).close();
-		resource.add(linkTo(RestController.class).slash("organization").slash(orgId).withRel(organization.getName()));
+		resource.add(linkTo(OrganizationController.class).slash("organization").slash(orgId).withRel(organization.getName()));
 		return resource;
 	}
 
