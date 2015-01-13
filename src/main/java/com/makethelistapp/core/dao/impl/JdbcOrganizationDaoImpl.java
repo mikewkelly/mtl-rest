@@ -89,29 +89,57 @@ public class JdbcOrganizationDaoImpl implements JdbcOrganizationDao {
 				+ "`orgContactEmail` = VALUES(`orgContactEmail`),"
 				+ "`orgStatus` = VALUES(`orgStatus`)";
 		
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
-		jdbcTemplate.update(new PreparedStatementCreator() {           
+		if (organization.getId() == 0) {
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
 
-            public PreparedStatement createPreparedStatement(Connection connection)
-                    throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, organization.getId());
-                ps.setString(2, organization.getName());
-                ps.setString(3, organization.getStreet());
-                ps.setString(4, organization.getCity());
-                ps.setString(5, organization.getProvince());
-                ps.setString(6, organization.getCountry());
-                ps.setString(7, organization.getContactName());
-                ps.setString(8, organization.getContactPhone());
-                ps.setString(9, organization.getContactEmail());
-                ps.setString(10, organization.getStatus());
-                
-                return ps;
-            }
-        }, keyHolder);
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+	                ps.setInt(1, organization.getId());
+	                ps.setString(2, organization.getName());
+	                ps.setString(3, organization.getStreet());
+	                ps.setString(4, organization.getCity());
+	                ps.setString(5, organization.getProvince());
+	                ps.setString(6, organization.getCountry());
+	                ps.setString(7, organization.getContactName());
+	                ps.setString(8, organization.getContactPhone());
+	                ps.setString(9, organization.getContactEmail());
+	                ps.setString(10, organization.getStatus());
+	                
+	                return ps;
+	            }
+	        }, keyHolder);
+			
+			return keyHolder.getKey().intValue();
+			
+		} else {
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
+
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString());
+	                ps.setInt(1, organization.getId());
+	                ps.setString(2, organization.getName());
+	                ps.setString(3, organization.getStreet());
+	                ps.setString(4, organization.getCity());
+	                ps.setString(5, organization.getProvince());
+	                ps.setString(6, organization.getCountry());
+	                ps.setString(7, organization.getContactName());
+	                ps.setString(8, organization.getContactPhone());
+	                ps.setString(9, organization.getContactEmail());
+	                ps.setString(10, organization.getStatus());
+	                
+	                return ps;
+	            }
+	        });
+			
+			return organization.getId();
+		}
 		
-		return keyHolder.getKey().intValue();
+	
 	}
 	
 

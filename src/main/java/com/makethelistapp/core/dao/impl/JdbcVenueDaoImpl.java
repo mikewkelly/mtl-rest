@@ -99,27 +99,54 @@ public class JdbcVenueDaoImpl implements JdbcVenueDao {
 				+ "`venueStatus` = VALUES(`venueStatus`),"
 				+ "`organizationId` = VALUES(`organizationId`)";
 		
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
-		jdbcTemplate.update(new PreparedStatementCreator() {           
+		if (venue.getId() == 0) {
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
 
-            public PreparedStatement createPreparedStatement(Connection connection)
-                    throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, venue.getId());
-                ps.setString(2, venue.getName());
-                ps.setString(3, venue.getStreet());
-                ps.setString(4, venue.getCity());
-                ps.setString(5, venue.getProvince());
-                ps.setString(6, venue.getCountry());
-                ps.setString(7, venue.getStatus());
-                ps.setInt(8, venue.getOrganizationId());
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+	                ps.setInt(1, venue.getId());
+	                ps.setString(2, venue.getName());
+	                ps.setString(3, venue.getStreet());
+	                ps.setString(4, venue.getCity());
+	                ps.setString(5, venue.getProvince());
+	                ps.setString(6, venue.getCountry());
+	                ps.setString(7, venue.getStatus());
+	                ps.setInt(8, venue.getOrganizationId());
 
-                return ps;
-            }
-        }, keyHolder);
+	                return ps;
+	            }
+	        }, keyHolder);
+			
+			return keyHolder.getKey().intValue();
+			
+		} else {
 		
-		return keyHolder.getKey().intValue();
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
+
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString());
+	                ps.setInt(1, venue.getId());
+	                ps.setString(2, venue.getName());
+	                ps.setString(3, venue.getStreet());
+	                ps.setString(4, venue.getCity());
+	                ps.setString(5, venue.getProvince());
+	                ps.setString(6, venue.getCountry());
+	                ps.setString(7, venue.getStatus());
+	                ps.setInt(8, venue.getOrganizationId());
+
+	                return ps;
+	            }
+	        });
+			
+			return venue.getId();
+		}
+		
+
 
 	}
 	

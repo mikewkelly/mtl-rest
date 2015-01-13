@@ -4,13 +4,19 @@ import java.sql.Timestamp;
 
 public class Event {
 	
+	//Event Table
 	int id;
-	String name;
 	Timestamp start;
 	Timestamp end;
-	String recurring;
 	String status;
 	int venueId;
+	//fk refs eventTemplateId
+	
+	//EventTemplate Table
+	int eventTemplateId;
+	String name;
+	String recurring;
+	String eventDay;
 	
 	public int getId() {
 		return id;
@@ -53,6 +59,18 @@ public class Event {
 	}
 	public void setVenueId(int venueId) {
 		this.venueId = venueId;
+	}
+	public int getEventTemplateId() {
+		return eventTemplateId;
+	}
+	public void setEventTemplateId(int eventTemplateId) {
+		this.eventTemplateId = eventTemplateId;
+	}
+	public String getEventDay() {
+		return eventDay;
+	}
+	public void setEventDay(String day) {
+		this.eventDay = day;
 	}
 
 }

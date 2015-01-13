@@ -8,6 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,7 +50,7 @@ public class BaseController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/me")
+	@RequestMapping(method = RequestMethod.GET, value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<User> getMe() {
 		//TODO - Important
@@ -63,5 +64,6 @@ public class BaseController {
 		ResponseEntity<User> response = new ResponseEntity<User>(user, HttpStatus.OK);
 		return response;
 	}
+	
 
 }

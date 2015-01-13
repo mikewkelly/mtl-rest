@@ -23,7 +23,7 @@ public class EventResourceAssembler implements ResourceAssembler<Event, Resource
 		Venue venue = jdbcVenueDao.getVenueById(event.getVenueId());
 		int orgId = venue.getOrganizationId();
 		((ConfigurableApplicationContext)ctx).close();
-
+		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venue.getId()).slash("events").slash(event.getId()).withSelfRel());
 		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venue.getId()).slash("events").slash(event.getId()).slash("glists").withRel("glists"));
 		return resource;
 	}

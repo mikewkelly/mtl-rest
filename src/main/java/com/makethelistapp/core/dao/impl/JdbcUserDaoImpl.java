@@ -49,7 +49,10 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 	
 	public int getUserCount() {
 		String sql = "SELECT COUNT(*) FROM USER";
-		return jdbcTemplate.queryForInt(sql);
+		
+		//int count = jdbcTemplate.queryForInt(sql);
+		int count = jdbcTemplate.queryForObject(sql, Integer.class);
+		return count;
 	}
 	
 	public List<User> getAllUsers() {

@@ -14,6 +14,7 @@ public class VenueResourceAssembler implements ResourceAssembler<Venue, Resource
 	public Resource<Venue> toResource(Venue venue) {
 		Resource<Venue> resource = new Resource<Venue>(venue);
 		int orgId = venue.getOrganizationId();
+		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venue.getId()).withSelfRel());
 		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venue.getId()).slash("events").withRel("events"));
 		return resource;
 	}

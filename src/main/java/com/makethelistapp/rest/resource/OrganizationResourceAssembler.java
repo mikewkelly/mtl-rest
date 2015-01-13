@@ -13,6 +13,7 @@ public class OrganizationResourceAssembler implements ResourceAssembler<Organiza
 	@Override
 	public Resource<Organization> toResource(Organization organization) {
 		Resource<Organization> resource = new Resource<Organization>(organization);
+		resource.add(linkTo(OrganizationController.class).slash(organization.getId()).withSelfRel());
 		resource.add(linkTo(OrganizationController.class).slash(organization.getId()).slash("venues").withRel("venues"));
 		return resource;
 	}

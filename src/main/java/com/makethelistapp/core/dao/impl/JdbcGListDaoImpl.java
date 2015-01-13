@@ -70,22 +70,43 @@ public class JdbcGListDaoImpl implements JdbcGListDao {
 				+ "`glistName` = VALUES(`glistName`),"
 				+ "`eventId` = VALUES(`eventId`)";
 		
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
-		jdbcTemplate.update(new PreparedStatementCreator() {           
+		if (glist.getId() == 0) {
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
 
-            public PreparedStatement createPreparedStatement(Connection connection)
-                    throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, glist.getId());
-                ps.setString(2, glist.getName());
-                ps.setInt(3, glist.getEventId());
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+	                ps.setInt(1, glist.getId());
+	                ps.setString(2, glist.getName());
+	                ps.setInt(3, glist.getEventId());
 
-                return ps;
-            }
-        }, keyHolder);
+	                return ps;
+	            }
+	        }, keyHolder);
+			
+			return keyHolder.getKey().intValue();
+			
+		} else {
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
+
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString());
+	                ps.setInt(1, glist.getId());
+	                ps.setString(2, glist.getName());
+	                ps.setInt(3, glist.getEventId());
+
+	                return ps;
+	            }
+	        });
+			
+			return glist.getId();
+		}
 		
-		return keyHolder.getKey().intValue();
+	
 	}
 	
 	public class GListRowMapper implements RowMapper<GList> {

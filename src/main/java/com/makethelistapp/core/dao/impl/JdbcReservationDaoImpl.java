@@ -106,31 +106,61 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 				+ "`reservationStatus` = VALUES(`reservationStatus`),"
 				+ "`reservationNote` = VALUES(`reservationNote`)";
 		
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
-		jdbcTemplate.update(new PreparedStatementCreator() {           
+		if (reservation.getId() == 0) {
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
 
-            public PreparedStatement createPreparedStatement(Connection connection)
-                    throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, reservation.getId());
-                ps.setString(2, reservation.getFirstName());
-                ps.setString(3, reservation.getLastName());
-                ps.setInt(4, reservation.getFreeCover());
-                ps.setInt(5, reservation.getHalfCover());
-                ps.setInt(6, reservation.getNumGuests());
-                ps.setInt(7, reservation.getPayCover());
-                ps.setInt(8, reservation.getGlistId());
-                ps.setInt(9, reservation.getUserId());
-                ps.setBoolean(10, reservation.isArrived());
-                ps.setString(11, reservation.getStatus());
-                ps.setString(12, reservation.getNote());
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+	                ps.setInt(1, reservation.getId());
+	                ps.setString(2, reservation.getFirstName());
+	                ps.setString(3, reservation.getLastName());
+	                ps.setInt(4, reservation.getFreeCover());
+	                ps.setInt(5, reservation.getHalfCover());
+	                ps.setInt(6, reservation.getNumGuests());
+	                ps.setInt(7, reservation.getPayCover());
+	                ps.setInt(8, reservation.getGlistId());
+	                ps.setInt(9, reservation.getUserId());
+	                ps.setBoolean(10, reservation.isArrived());
+	                ps.setString(11, reservation.getStatus());
+	                ps.setString(12, reservation.getNote());
 
-                return ps;
-            }
-        }, keyHolder);
+	                return ps;
+	            }
+	        }, keyHolder);
+			
+			return keyHolder.getKey().intValue();
+			
+		} else {
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
+
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+	                ps.setInt(1, reservation.getId());
+	                ps.setString(2, reservation.getFirstName());
+	                ps.setString(3, reservation.getLastName());
+	                ps.setInt(4, reservation.getFreeCover());
+	                ps.setInt(5, reservation.getHalfCover());
+	                ps.setInt(6, reservation.getNumGuests());
+	                ps.setInt(7, reservation.getPayCover());
+	                ps.setInt(8, reservation.getGlistId());
+	                ps.setInt(9, reservation.getUserId());
+	                ps.setBoolean(10, reservation.isArrived());
+	                ps.setString(11, reservation.getStatus());
+	                ps.setString(12, reservation.getNote());
+
+	                return ps;
+	            }
+	        });
+			
+			return reservation.getId();
+		}
 		
-		return keyHolder.getKey().intValue();
+		
 		
 	}
 	

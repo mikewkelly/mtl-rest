@@ -43,7 +43,11 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 
 	@Override
 	public Event getEventById(int id) {
-		String sql = "SELECT * FROM event WHERE idEvent = ?";
+		String sql = "SELECT * "
+				+ "FROM (SELECT idEvent, eventStart, eventEnd, eventStatus, venueId, eventName, eventTemplateId ,eventRecurring, eventDay "
+				+ "FROM event "
+				+ "INNER JOIN eventTemplate on event.eventTemplateId = eventTemplate.idEventTemplate) AS temp "
+				+ "WHERE temp.idEvent = ?";
 		Event event = jdbcTemplate.queryForObject(sql, new Object[] { id }, new EventRowMapper());
 		return event;
 	}
@@ -57,7 +61,11 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 	@Override
 	public List<Event> getAllEventsByVenueId(int venueId) {
 		List<Event> events = new ArrayList<Event>();
-		String sql = "SELECT * FROM event WHERE venueId=" + venueId;
+		String sql = "SELECT idEvent, eventStart, eventEnd, eventStatus, venueId, eventTemplateId, eventName, eventRecurring, eventDay "
+				+ "FROM event "
+				+ "INNER JOIN eventTemplate on event.eventTemplateId = eventTemplate.idEventTemplate";
+		
+		
 		List<Map<String,Object>> rows = jdbcTemplate.queryForList(sql);
 		for (Map<String,Object> row : rows) {
 		Event event = new Event();
@@ -68,6 +76,8 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 		event.setRecurring((String) row.get("eventRecurring"));
 		event.setStatus((String) row.get("eventStatus"));
 		event.setVenueId((int) row.get("venueId"));
+		event.setEventDay((String) row.get("eventDay"));
+		event.setEventTemplateId((int) row.get("eventTemplateId"));
 		events.add(event);
 		}
 		return events;
@@ -86,37 +96,105 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 	}
 	
 	public int updateEvent(final Event event) {
+		int eventTemplateId = updateEventTemplate(event);
+		event.setEventTemplateId(eventTemplateId);
 		
-		final String sql = "INSERT INTO event(`idEvent`,`eventName`, `eventStart`, `eventEnd`, `eventRecurring`, `eventStatus`, `venueId`)"
-				+ "VALUES(?,?,?,?,?,?,?)"
+		final String sql = "INSERT INTO event(`idEvent`, `eventStart`, `eventEnd`, `eventStatus`, `venueId`, `eventTemplateId`)"
+				+ "VALUES(?,?,?,?,?,?)"
 				+ "ON DUPLICATE KEY UPDATE"
-				+ "`eventName` = VALUES(`eventName`),"
 				+ "`eventStart` = VALUES(`eventStart`),"
 				+ "`eventEnd` = VALUES(`eventEnd`),"
-				+ "`eventRecurring` = VALUES(`eventRecurring`),"
 				+ "`eventStatus` = VALUES(`eventStatus`),"
-				+ "`venueId` = VALUES(`venueId`)";
+				+ "`venueId` = VALUES(`venueId`),"
+				+ "`eventTemplateId` = VALUES(`eventTemplateId`)";
 		
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
-		jdbcTemplate.update(new PreparedStatementCreator() {           
+		if (event.getId() == 0) {
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
 
-            public PreparedStatement createPreparedStatement(Connection connection)
-                    throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, event.getId());
-                ps.setString(2, event.getName());
-                ps.setTimestamp(3, event.getStart());
-                ps.setTimestamp(4, event.getEnd());
-                ps.setString(5, event.getRecurring());
-                ps.setString(6, event.getStatus());
-                ps.setInt(7, event.getVenueId());
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+	                ps.setInt(1, event.getId());
+	                ps.setTimestamp(2, event.getStart());
+	                ps.setTimestamp(3, event.getEnd());
+	                ps.setString(4, event.getStatus());
+	                ps.setInt(5, event.getVenueId());
+	                ps.setInt(6, event.getEventTemplateId());
+	                return ps;
+	            }
+	        }, keyHolder);
+			
+			return keyHolder.getKey().intValue();
+		} else {
+			jdbcTemplate.update(new PreparedStatementCreator() {           
 
-                return ps;
-            }
-        }, keyHolder);
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString());
+	                ps.setInt(1, event.getId());
+	                ps.setTimestamp(2, event.getStart());
+	                ps.setTimestamp(3, event.getEnd());
+	                ps.setString(4, event.getStatus());
+	                ps.setInt(5, event.getVenueId());
+	                ps.setInt(6, event.getEventTemplateId());
+	                return ps;
+	            }
+	        });
+			return event.getId();
+		}
 		
-		return keyHolder.getKey().intValue();
+		
+	}
+	
+	public int updateEventTemplate(final Event event) {
+
+		final String sql = "INSERT INTO eventTemplate(`idEventTemplate`,`eventName`, `eventRecurring`, `eventDay`)"
+				+ "VALUES(?,?,?,?)"
+				+ "ON DUPLICATE KEY UPDATE"
+				+ "`eventName` = VALUES(`eventName`),"
+				+ "`eventRecurring` = VALUES(`eventRecurring`),"
+				+ "`eventDay` = VALUES(`eventDay`)";
+		
+		if (event.getEventTemplateId() == 0) {
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
+
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+	                ps.setInt(1, event.getEventTemplateId());
+	                ps.setString(2, event.getName());
+	                ps.setString(3, event.getRecurring());
+	                ps.setString(4, event.getEventDay());
+	                return ps;
+	            }
+	        }, keyHolder);
+			
+			return keyHolder.getKey().intValue();
+			
+		} else {
+			
+			jdbcTemplate.update(new PreparedStatementCreator() {           
+
+	            public PreparedStatement createPreparedStatement(Connection connection)
+	                    throws SQLException {
+	                PreparedStatement ps = connection.prepareStatement(sql.toString());
+	                ps.setInt(1, event.getEventTemplateId());
+	                ps.setString(2, event.getName());
+	                ps.setString(3, event.getRecurring());
+	                ps.setString(4, event.getEventDay());
+	                return ps;
+	            }
+	        });
+			
+			return event.getEventTemplateId();
+			
+		}
+		
+
 	}
 	
 	public class EventRowMapper implements RowMapper<Event> {
@@ -131,6 +209,8 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 			event.setRecurring(rs.getString("eventRecurring"));
 			event.setStatus(rs.getString("eventStatus"));
 			event.setVenueId(rs.getInt("venueId"));
+			event.setEventDay(rs.getString("eventDay"));
+			event.setEventTemplateId(rs.getInt("eventTemplateId"));
 			return event;
 		}
 		

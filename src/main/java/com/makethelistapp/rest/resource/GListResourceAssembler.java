@@ -31,7 +31,7 @@ public class GListResourceAssembler implements ResourceAssembler<GList, Resource
 		int venueId = event.getVenueId();
 		Venue venue = jdbcVenueDao.getVenueById(venueId);
 		int orgId = venue.getOrganizationId();
-		
+		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venueId).slash("events").slash(eventId).slash("glists").slash(glistId).withSelfRel());
 		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venueId).slash("events").slash(eventId).slash("glists").slash(glistId).slash("reservations").withRel("reservations"));
 		
 		((ConfigurableApplicationContext)ctx).close();
