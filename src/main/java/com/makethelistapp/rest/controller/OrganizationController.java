@@ -96,6 +96,29 @@ public class OrganizationController {
 		}
 	}
 	
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{idOrganization}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public HttpStatus deleteOrganization(@PathVariable("idOrganization") int orgId, @RequestBody Organization organization) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
+		
+		if (organization.getId() != orgId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			jdbcOrganizationDao.deleteOrganizaionById(organization.getId());
+
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NO_CONTENT;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<List<Resource<Venue>>> getVenues(@PathVariable("idOrganization") int orgId) {
@@ -164,6 +187,28 @@ public class OrganizationController {
 			jdbcVenueDao.updateVenue(venue);
 			((ConfigurableApplicationContext)ctx).close();
 			return HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{idOrganization}/venues/{idVenue}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public HttpStatus deleteVenue(@PathVariable("idVenue") int venueId, @RequestBody Venue venue) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
+		
+		if (venue.getId() != venueId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			jdbcVenueDao.deleteVenueById(venue.getId());
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
 			((ConfigurableApplicationContext)ctx).close();
 			e.printStackTrace();
@@ -245,6 +290,33 @@ public class OrganizationController {
 		}
 	}
 	
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public HttpStatus deleteEvent(@PathVariable("idEvent") int eventId, @RequestBody Event event) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
+		
+		if (event.getId() != eventId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			if (event.getEventTemplateId() == 0) {
+				jdbcEventDao.deleteEventById(event.getId());
+			} else {
+				jdbcEventDao.deleteEventsByTemplateId(event.getEventTemplateId());
+				jdbcEventDao.deleteEventTemplateById(event.getEventTemplateId());
+			}
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NO_CONTENT;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<List<Resource<GList>>> getGLists(@PathVariable("idEvent") int eventId) {
@@ -299,6 +371,28 @@ public class OrganizationController {
 			jdbcGListDao.updateGList(glist);
 			((ConfigurableApplicationContext)ctx).close();
 			return HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGlist}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public HttpStatus deleteGlist(@PathVariable("idGlist") int glistId, @RequestBody GList glist) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcGListDaoImpl jdbcGListDao = ctx.getBean("jdbcGListDaoImpl", JdbcGListDaoImpl.class);
+		
+		if (glist.getId() != glistId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			jdbcGListDao.deleteGListById(glist.getId());
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
 			((ConfigurableApplicationContext)ctx).close();
 			e.printStackTrace();
@@ -377,6 +471,28 @@ public class OrganizationController {
 			jdbcReservationDao.updateReservation(reservation);
 			((ConfigurableApplicationContext)ctx).close();
 			return HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			((ConfigurableApplicationContext)ctx).close();
+			e.printStackTrace();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations/{idReservation}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public HttpStatus deleteReservation(@PathVariable("idReservation") int reservationId, @RequestBody Reservation reservation) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
+		
+		if (reservation.getId() != reservationId) {
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NOT_ACCEPTABLE;
+		}
+		
+		try {
+			jdbcReservationDao.deleteReservationById(reservation.getId());
+			((ConfigurableApplicationContext)ctx).close();
+			return HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
 			((ConfigurableApplicationContext)ctx).close();
 			e.printStackTrace();

@@ -51,6 +51,16 @@ public class JdbcOrganizationDaoImpl implements JdbcOrganizationDao {
 		return organization;
 	}
 	
+	public void deleteOrganizaionById(int id) {
+		try {
+			String sql = "DELETE FROM ORGANIZATION WHERE idOrganization = ?";
+			jdbcTemplate.update(sql, id);
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
 	public List<Organization> getAllOrganizations() {
 		List<Organization> organizations = new ArrayList<Organization>();
 		String sql = "SELECT * FROM ORGANIZATION";

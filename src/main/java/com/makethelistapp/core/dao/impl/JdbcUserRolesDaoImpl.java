@@ -51,6 +51,16 @@ public class JdbcUserRolesDaoImpl implements JdbcUserRolesDao{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public void deleteUserRoleById(int id) {
+		try {
+			String sql = "DELETE FROM USER_ROLES WHERE userRoleId = ?";
+			jdbcTemplate.update(sql, id);
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
 
 	@Override
 	public List<UserRoles> getAllUserRolesByUsername(String username) {

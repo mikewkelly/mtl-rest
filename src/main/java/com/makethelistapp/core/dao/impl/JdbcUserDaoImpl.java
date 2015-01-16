@@ -55,6 +55,16 @@ public class JdbcUserDaoImpl implements JdbcUserDao {
 		return count;
 	}
 	
+	public void deleteUserById(int id) {
+		try {
+			String sql = "DELETE FROM User WHERE idUser = ?";
+			jdbcTemplate.update(sql, id);
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
 	public List<User> getAllUsers() {
 		List<User> users = new ArrayList<User>();
 		String sql = "SELECT * FROM USER";

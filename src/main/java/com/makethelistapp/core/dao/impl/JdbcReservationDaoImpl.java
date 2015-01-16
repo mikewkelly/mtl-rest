@@ -88,6 +88,16 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 		return null;
 	}
 	
+	public void deleteReservationById(int id) {
+		try {
+			String sql = "DELETE FROM RESERVATION WHERE idReservation = ?";
+			jdbcTemplate.update(sql, id);
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
 	@Override
 	public int updateReservation(final Reservation reservation) {
 

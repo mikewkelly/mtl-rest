@@ -85,6 +85,16 @@ public class JdbcVenueDaoImpl implements JdbcVenueDao {
 		return null;
 	}
 	
+	public void deleteVenueById(int id) {
+		try {
+			String sql = "DELETE FROM VENUE WHERE idVenue = ?";
+			jdbcTemplate.update(sql, id);
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
 	@Override
 	public int updateVenue(final Venue venue) {
 		

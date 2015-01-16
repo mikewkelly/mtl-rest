@@ -61,6 +61,16 @@ public class JdbcGListDaoImpl implements JdbcGListDao {
 		return glists;
 	}
 	
+	public void deleteGListById(int id) {
+		try {
+			String sql = "DELETE FROM GLIST WHERE idGList = ?";
+			jdbcTemplate.update(sql, id);
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
 	@Override
 	public int updateGList(final GList glist) {
 		

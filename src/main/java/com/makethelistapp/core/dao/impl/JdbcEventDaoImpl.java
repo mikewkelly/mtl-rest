@@ -95,6 +95,35 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 		return null;
 	}
 	
+	public void deleteEventById(int id) {
+		try {
+			String sql = "DELETE FROM EVENT WHERE idEvent = ?";
+			jdbcTemplate.update(sql, id);
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
+	public void deleteEventsByTemplateId (int templateId) {
+		try {
+			String sql = "DELETE FROM EVENT WHERE eventTemplateId = ?";
+			jdbcTemplate.update(sql, templateId);
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	public void deleteEventTemplateById(int id) {
+		try {
+			String sql = "DELETE FROM EVENTTEMPLATE WHERE idEventTemplate = ?";
+			jdbcTemplate.update(sql, id);
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
 	public int updateEvent(final Event event) {
 		int eventTemplateId = updateEventTemplate(event);
 		event.setEventTemplateId(eventTemplateId);
