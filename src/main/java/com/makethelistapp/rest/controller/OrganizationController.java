@@ -51,20 +51,26 @@ public class OrganizationController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Integer> addOrganization(@RequestBody Organization organization) {
+	public ResponseEntity<Resource<Organization>> addOrganization(@RequestBody Organization organization) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcOrganizationDaoImpl jdbcOrganizationDao = ctx.getBean("jdbcOrganizationDaoImpl", JdbcOrganizationDaoImpl.class);
-
+		OrganizationResourceAssembler orgResAss = new OrganizationResourceAssembler();
+		
 		try {
 			int newId = jdbcOrganizationDao.updateOrganization(organization);
+			organization.setId(newId);
+			Resource<Organization> resource = orgResAss.toResource(organization);
+			ResponseEntity<Resource<Organization>> response = new ResponseEntity<Resource<Organization>>(resource, HttpStatus.ACCEPTED);
 			((ConfigurableApplicationContext)ctx).close();
-			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+			return response;
+			
 		} catch (Exception e) {
+			Resource<Organization> resource = orgResAss.toResource(null);
+			ResponseEntity<Resource<Organization>> response = new ResponseEntity<Resource<Organization>>(resource, HttpStatus.NOT_ACCEPTABLE);
 			((ConfigurableApplicationContext)ctx).close();
-			e.printStackTrace();
-			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+			return response;
 		}
 	}
 	
@@ -120,20 +126,26 @@ public class OrganizationController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Integer> addVenue(@RequestBody Venue venue) {
+	public ResponseEntity<Resource<Venue>> addVenue(@RequestBody Venue venue) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
+		VenueResourceAssembler vra = new VenueResourceAssembler();
 
 		try {
 			int newId = jdbcVenueDao.updateVenue(venue);
+			venue.setId(newId);
+			Resource<Venue> resource = vra.toResource(venue);
+			ResponseEntity<Resource<Venue>> response = new ResponseEntity<Resource<Venue>>(resource, HttpStatus.ACCEPTED);
 			((ConfigurableApplicationContext)ctx).close();
-			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+			return response;
+
 		} catch (Exception e) {
-			((ConfigurableApplicationContext)ctx).close();
-			e.printStackTrace();
-			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+			Resource<Venue> resource = vra.toResource(null);
+			ResponseEntity<Resource<Venue>> response = new ResponseEntity<Resource<Venue>>(resource, HttpStatus.NOT_ACCEPTABLE);
+			((ConfigurableApplicationContext)ctx).close();	
+			return response;
 		}
 	}
 	
@@ -189,20 +201,25 @@ public class OrganizationController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Integer> addEvent(@RequestBody Event event) {
+	public ResponseEntity<Resource<Event>> addEvent(@RequestBody Event event) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
+		EventResourceAssembler era = new EventResourceAssembler();
 		
 		try {
 			int newId = jdbcEventDao.updateEvent(event);
 			((ConfigurableApplicationContext)ctx).close();
-			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+			event.setId(newId);
+			Resource<Event> resource = era.toResource(event);
+			ResponseEntity<Resource<Event>> response = new ResponseEntity<Resource<Event>>(resource, HttpStatus.ACCEPTED);
+			return response;
 		} catch (Exception e) {
+			Resource<Event> resource = era.toResource(null);
+			ResponseEntity<Resource<Event>> response = new ResponseEntity<Resource<Event>>(resource, HttpStatus.NOT_ACCEPTABLE);
 			((ConfigurableApplicationContext)ctx).close();
-			e.printStackTrace();
-			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+			return response;
 		}
 	}
 	
@@ -245,20 +262,25 @@ public class OrganizationController {
 		return response;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Integer> addGlist(@RequestBody GList glist) {
+	public ResponseEntity<Resource<GList>> addGlist(@RequestBody GList glist) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcGListDaoImpl jdbcGListDao = ctx.getBean("jdbcGListDaoImpl", JdbcGListDaoImpl.class);
-		
+		GListResourceAssembler glra = new GListResourceAssembler();
 		try {
 			int newId = jdbcGListDao.updateGList(glist);
+			glist.setId(newId);
+			Resource<GList> resource = glra.toResource(glist);
+			ResponseEntity<Resource<GList>> response = new ResponseEntity<Resource<GList>>(resource, HttpStatus.ACCEPTED);
 			((ConfigurableApplicationContext)ctx).close();
-			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+			return response;
+
 		} catch (Exception e) {
+			Resource<GList> resource = glra.toResource(null);
+			ResponseEntity<Resource<GList>> response = new ResponseEntity<Resource<GList>>(resource, HttpStatus.NOT_ACCEPTABLE);
 			((ConfigurableApplicationContext)ctx).close();
-			e.printStackTrace();
-			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+			return response;
 		}
 	}
 	
@@ -304,20 +326,26 @@ public class OrganizationController {
 	
 	
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists/{idGList}/reservations", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Integer> addReservation(@RequestBody Reservation reservation) {
+	public ResponseEntity<Resource<Reservation>> addReservation(@RequestBody Reservation reservation) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcReservationDaoImpl jdbcReservationDao = ctx.getBean("jdbcReservationDaoImpl", JdbcReservationDaoImpl.class);
+		ReservationResourceAssembler rra = new ReservationResourceAssembler();
 		
 		try {
 			int newId = jdbcReservationDao.updateReservation(reservation);
+			reservation.setId(newId);
+			Resource<Reservation> resource = rra.toResource(reservation);
+			ResponseEntity<Resource<Reservation>> response = new ResponseEntity<Resource<Reservation>>(resource, HttpStatus.ACCEPTED);
 			((ConfigurableApplicationContext)ctx).close();
-			return new ResponseEntity<Integer>(newId, HttpStatus.ACCEPTED);
+			return response;
+
 		} catch (Exception e) {
+			Resource<Reservation> resource = rra.toResource(null);
+			ResponseEntity<Resource<Reservation>> response = new ResponseEntity<Resource<Reservation>>(resource, HttpStatus.NOT_ACCEPTABLE);
 			((ConfigurableApplicationContext)ctx).close();
-			e.printStackTrace();
-			return new ResponseEntity<Integer>(-1, HttpStatus.NOT_ACCEPTABLE);
+			return response;
 		}
 	}
 	
