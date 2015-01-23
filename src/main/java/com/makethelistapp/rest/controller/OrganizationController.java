@@ -302,12 +302,9 @@ public class OrganizationController {
 		}
 		
 		try {
-			if (event.getEventTemplateId() == 0) {
+
 				jdbcEventDao.deleteEventById(event.getId());
-			} else {
-				jdbcEventDao.deleteEventsByTemplateId(event.getEventTemplateId());
-				jdbcEventDao.deleteEventTemplateById(event.getEventTemplateId());
-			}
+
 			((ConfigurableApplicationContext)ctx).close();
 			return HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
