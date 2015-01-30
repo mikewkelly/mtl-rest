@@ -70,7 +70,8 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 		event.setStatus((String) row.get("eventStatus"));
 		event.setEventDay((String) row.get("eventDay"));
 		event.setVenueId((int) row.get("venueId"));
-
+		event.setDescription((String) row.get("description"));
+		event.setAddedBy((String) row.get("addedBy"));
 		events.add(event);
 		}
 		return events;
@@ -118,8 +119,8 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 	}
 	
 	public int updateEvent(final Event event) {
-		final String sql = "INSERT INTO event (`idEvent`,`eventName`,`eventStart`,`eventEnd`,`eventRecurring`,`eventStatus`,`eventDay`,`venueId`)"
-				+ "VALUES(?,?,?,?,?,?,?,?)"
+		final String sql = "INSERT INTO event (`idEvent`,`eventName`,`eventStart`,`eventEnd`,`eventRecurring`,`eventStatus`,`eventDay`,`venueId`, `description`, `addedBy`)"
+				+ "VALUES(?,?,?,?,?,?,?,?,?,?)"
 				+ "ON DUPLICATE KEY UPDATE"
 				+ "`idEvent` = VALUES(`idEvent`),"
 				+ "`eventName` = VALUES(`eventName`),"
@@ -128,7 +129,9 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 				+ "`eventRecurring` = VALUES(`eventRecurring`),"
 				+ "`eventStatus` = VALUES(`eventStatus`),"
 				+ "`eventDay` = VALUES(`eventDay`),"
-				+ "`venueId` = VALUES(`venueId`)";
+				+ "`venueId` = VALUES(`venueId`),"
+				+ "`description` = VALUES(`description`) ,"
+				+ "`addedBy` = VALUES(`addedBy`)";
 
 		if (event.getId() == 0) {
 			
@@ -147,6 +150,8 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 	                ps.setString(6, event.getStatus());
 	                ps.setString(7, event.getEventDay());
 	                ps.setInt(8, event.getVenueId());
+	                ps.setString(9, event.getDescription());
+	                ps.setString(10, event.getAddedBy());
 
 	                return ps;
 	            }
@@ -169,6 +174,8 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 	                ps.setString(6, event.getStatus());
 	                ps.setString(7, event.getEventDay());
 	                ps.setInt(8, event.getVenueId());
+	                ps.setString(9,  event.getDescription());
+	                ps.setString(10, event.getAddedBy());
 					return ps;
 				}
 			});
@@ -192,6 +199,8 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 			event.setStatus(rs.getString("eventStatus"));
 			event.setEventDay(rs.getString("eventDay"));
 			event.setVenueId(rs.getInt("venueId"));
+			event.setDescription(rs.getString("description"));
+			event.setAddedBy(rs.getString("addedBy"));
 
 			return event;
 		}

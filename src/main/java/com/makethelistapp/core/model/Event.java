@@ -12,6 +12,9 @@ public class Event {
 	String status;
 	String eventDay;
 	int venueId;
+
+	String description;
+	String addedBy;
 	
 	public int getId() {
 		return id;
@@ -60,6 +63,18 @@ public class Event {
 	}
 	public void setEventDay(String day) {
 		this.eventDay = day;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getAddedBy() {
+		return addedBy;
+	}
+	public void setAddedBy(String addedBy) {
+		this.addedBy = addedBy;
 	}
 
 }
