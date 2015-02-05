@@ -370,6 +370,7 @@ public class OrganizationController {
 	                		jdbcEventImageDao.updateEventImage(currentEventImage);
 	                	} 
 	                	eventImage.setCurrent(true);
+	                	System.out.println("Current is true");
 	                } else {
 	                	eventImage.setCurrent(false);
 	                }

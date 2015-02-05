@@ -47,10 +47,14 @@ public class JdbcEventImageDaoImpl implements JdbcEventImageDao {
 	}
 	
 	public EventImage getCurrentEventImage() {
-		String sql = "SELECT * FROM eventImage WHERE idEventImage=?";
+		String sql = "SELECT * FROM eventImage WHERE current=?";
 		int id = 1;
-		EventImage eventImage = jdbcTemplate.queryForObject(sql, new Object[] { id }, new EventImageRowMapper());
-		return eventImage;
+		try {
+			EventImage eventImage = jdbcTemplate.queryForObject(sql, new Object[] { id }, new EventImageRowMapper());
+			return eventImage;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override
