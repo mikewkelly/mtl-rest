@@ -7,26 +7,28 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
+
 import com.makethelistapp.core.dao.impl.JdbcVenueDaoImpl;
+import com.makethelistapp.core.dao.impl.JdbcEventDaoImpl;
 import com.makethelistapp.core.model.Event;
+import com.makethelistapp.core.model.EventImage;
 import com.makethelistapp.core.model.Venue;
 import com.makethelistapp.rest.controller.OrganizationController;
 
-public class EventResourceAssembler implements ResourceAssembler<Event, Resource<Event>>{
-
+public class EventImageResourceAssembler implements ResourceAssembler<EventImage, Resource<EventImage>> {
+	
 	@Override
-	public Resource<Event> toResource(Event event) {
-		Resource<Event> resource = new Resource<Event>(event);
+	public Resource<EventImage> toResource(EventImage eventImage) {
+		Resource<EventImage> resource = new Resource<EventImage>(eventImage);
 		
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
+		Event event = jdbcEventDao.getEventById(eventImage.getEventId());
 		JdbcVenueDaoImpl jdbcVenueDao = ctx.getBean("jdbcVenueDaoImpl", JdbcVenueDaoImpl.class);
 		Venue venue = jdbcVenueDao.getVenueById(event.getVenueId());
 		int orgId = venue.getOrganizationId();
 		((ConfigurableApplicationContext)ctx).close();
-		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venue.getId()).slash("events").slash(event.getId()).withSelfRel());
-		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venue.getId()).slash("events").slash(event.getId()).slash("glists").withRel("glists"));
-		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venue.getId()).slash("events").slash(event.getId()).slash("images").withRel("images"));
+		resource.add(linkTo(OrganizationController.class).slash(orgId).slash("venues").slash(venue.getId()).slash("events").slash(event.getId()).slash("images").slash(eventImage.getId()).withSelfRel());
 		return resource;
 	}
-
 }

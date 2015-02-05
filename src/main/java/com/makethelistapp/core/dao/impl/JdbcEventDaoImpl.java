@@ -43,7 +43,7 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 
 	@Override
 	public Event getEventById(int id) {
-		String sql = "SELECT * FROM event WHERE idEvent = ?";
+		String sql = "SELECT * FROM event WHERE idEvent=?";
 		Event event = jdbcTemplate.queryForObject(sql, new Object[] { id }, new EventRowMapper());
 		return event;
 	}
@@ -57,9 +57,9 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 	@Override
 	public List<Event> getAllEventsByVenueId(int venueId) {
 		List<Event> events = new ArrayList<Event>();
-		String sql = "SELECT * FROM event";
+		String sql = "SELECT * FROM event WHERE venueId=?";
 
-		List<Map<String,Object>> rows = jdbcTemplate.queryForList(sql);
+		List<Map<String,Object>> rows = jdbcTemplate.queryForList(sql, new Object[] {venueId});
 		for (Map<String,Object> row : rows) {
 		Event event = new Event();
 		event.setId((int) row.get("idEvent"));
@@ -92,25 +92,6 @@ public class JdbcEventDaoImpl implements JdbcEventDao {
 	public void deleteEventById(int id) {
 		try {
 			String sql = "DELETE FROM EVENT WHERE idEvent = ?";
-			jdbcTemplate.update(sql, id);
-		} catch (Exception e) {
-			throw e;
-		}
-		
-	}
-	
-	public void deleteEventsByTemplateId (int templateId) {
-		try {
-			String sql = "DELETE FROM EVENT WHERE eventTemplateId = ?";
-			jdbcTemplate.update(sql, templateId);
-		} catch (Exception e) {
-			throw e;
-		}
-	}
-	
-	public void deleteEventTemplateById(int id) {
-		try {
-			String sql = "DELETE FROM EVENTTEMPLATE WHERE idEventTemplate = ?";
 			jdbcTemplate.update(sql, id);
 		} catch (Exception e) {
 			throw e;

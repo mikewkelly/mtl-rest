@@ -1,12 +1,25 @@
 package com.makethelistapp.rest.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,18 +28,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.makethelistapp.config.CoreConfig;
 import com.makethelistapp.core.dao.impl.JdbcEventDaoImpl;
+import com.makethelistapp.core.dao.impl.JdbcEventImageDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcGListDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcOrganizationDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcReservationDaoImpl;
 import com.makethelistapp.core.dao.impl.JdbcVenueDaoImpl;
 import com.makethelistapp.core.model.Event;
+import com.makethelistapp.core.model.EventImage;
 import com.makethelistapp.core.model.GList;
 import com.makethelistapp.core.model.Organization;
 import com.makethelistapp.core.model.Reservation;
 import com.makethelistapp.core.model.Venue;
+import com.makethelistapp.rest.resource.EventImageResourceAssembler;
 import com.makethelistapp.rest.resource.EventResourceAssembler;
 import com.makethelistapp.rest.resource.GListResourceAssembler;
 import com.makethelistapp.rest.resource.OrganizationResourceAssembler;
@@ -313,6 +332,69 @@ public class OrganizationController {
 			return HttpStatus.NOT_ACCEPTABLE;
 		}
 	}
+	
+//TODO
+	 @RequestMapping(value="/{idOrganization}/venues/{idVenue}/events/{idEvent}/images", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	    public @ResponseBody ResponseEntity<Resource<EventImage>> handleFileUpload(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId, @RequestParam("name") String name,
+	            @RequestParam("file") MultipartFile file, @RequestParam("addedby") String addedBy, @RequestParam("current") Boolean current){
+	       
+		 
+		 String mimetype = file.getContentType();
+	        String type = mimetype.split("/")[0];
+	        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+            JdbcEventImageDaoImpl jdbcEventImageDao = ctx.getBean("jdbcEventImageDaoImpl", JdbcEventImageDaoImpl.class);
+            EventImageResourceAssembler eira = new EventImageResourceAssembler();
+            
+            if (!file.isEmpty() && type.equals("image")) {
+		 		try {
+	                byte[] bytes = file.getBytes();
+	                String dir = CoreConfig.PATH_TO_FOLDER + "/useruploads/organization/" + Integer.toString(orgId) + "/venues/" + Integer.toString(venueId) + "/events/" + Integer.toString(eventId) + "/images/";
+	                File theDir = new File(dir);
+	                theDir.mkdirs();
+	                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(dir + name)));
+
+	                stream.write(bytes);
+	                stream.close();
+	                
+	                EventImage eventImage = new EventImage();
+	                eventImage.setId(0);
+	                eventImage.setEventId(eventId);
+	                eventImage.setAddedBy(addedBy);
+	                String url = CoreConfig.IMG_BASE_URL + "/useruploads/organization/" + Integer.toString(orgId) + "/venues/" + Integer.toString(venueId) + "/events/" + Integer.toString(eventId) + "/images/" + name;
+	                eventImage.setUrl(url);
+	               
+	                if (current) {
+	                	EventImage currentEventImage = jdbcEventImageDao.getCurrentEventImage();
+	                	if (currentEventImage != null) {
+	                		currentEventImage.setCurrent(false);
+	                		jdbcEventImageDao.updateEventImage(currentEventImage);
+	                	} 
+	                	eventImage.setCurrent(true);
+	                } else {
+	                	eventImage.setCurrent(false);
+	                }
+	               int newId = jdbcEventImageDao.updateEventImage(eventImage);
+	               eventImage.setId(newId);
+
+	                Resource<EventImage> resource = eira.toResource(eventImage);
+
+	                ResponseEntity<Resource<EventImage>> response = new ResponseEntity<Resource<EventImage>>(resource, HttpStatus.ACCEPTED);
+	                ((ConfigurableApplicationContext)ctx).close();
+	                return response;
+	            } catch (Exception e) {
+	            	e.printStackTrace();
+	            	Resource<EventImage> resource = eira.toResource(null);
+	            	((ConfigurableApplicationContext)ctx).close();
+	                return new ResponseEntity<Resource<EventImage>>(resource, HttpStatus.NOT_ACCEPTABLE);
+	            }
+	        } else {
+	        	Resource<EventImage> resource = eira.toResource(null);
+            	((ConfigurableApplicationContext)ctx).close();
+                return new ResponseEntity<Resource<EventImage>>(resource, HttpStatus.NOT_ACCEPTABLE);
+	        }
+
+	    }
+
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody

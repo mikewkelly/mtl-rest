@@ -50,6 +50,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
     appServlet.setLoadOnStartup(1);
     Set<String> mappingConflicts = appServlet.addMapping("/");
 
+
     if (!mappingConflicts.isEmpty()) {
       for (String s : mappingConflicts) {
         LOG.error("Mapping conflict: " + s);
