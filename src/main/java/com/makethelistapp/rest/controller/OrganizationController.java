@@ -311,7 +311,7 @@ public class OrganizationController {
 	
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public HttpStatus deleteEvent(@PathVariable("idEvent") int eventId, @RequestBody Event event) {
+	public HttpStatus deleteEvent(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId, @RequestBody Event event) {
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 		JdbcEventDaoImpl jdbcEventDao = ctx.getBean("jdbcEventDaoImpl", JdbcEventDaoImpl.class);
 		
@@ -322,9 +322,15 @@ public class OrganizationController {
 		
 		try {
 
-				jdbcEventDao.deleteEventById(event.getId());
+			jdbcEventDao.deleteEventById(event.getId());
 
 			((ConfigurableApplicationContext)ctx).close();
+			
+			//TODO - delete directory
+			String dir = CoreConfig.PATH_TO_FOLDER + "/useruploads/organization/" + Integer.toString(orgId) + "/venues/" + Integer.toString(venueId) + "/events/" + Integer.toString(eventId);
+			File rootDir = new File(dir);
+			DeleteDirectory.DeleteDirectoryAndFiles(rootDir);
+			
 			return HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
 			((ConfigurableApplicationContext)ctx).close();
@@ -333,7 +339,6 @@ public class OrganizationController {
 		}
 	}
 	
-//TODO
 	 @RequestMapping(value="/{idOrganization}/venues/{idVenue}/events/{idEvent}/images", method=RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	    public @ResponseBody ResponseEntity<Resource<EventImage>> handleFileUpload(@PathVariable("idOrganization") int orgId, @PathVariable("idVenue") int venueId, @PathVariable("idEvent") int eventId, @RequestParam("name") String name,
 	            @RequestParam("file") MultipartFile file, @RequestParam("addedby") String addedBy, @RequestParam("current") Boolean current){
@@ -364,7 +369,7 @@ public class OrganizationController {
 	                eventImage.setUrl(url);
 	               
 	                if (current) {
-	                	EventImage currentEventImage = jdbcEventImageDao.getCurrentEventImage();
+	                	EventImage currentEventImage = jdbcEventImageDao.getCurrentEventImage(eventId);
 	                	if (currentEventImage != null) {
 	                		currentEventImage.setCurrent(false);
 	                		jdbcEventImageDao.updateEventImage(currentEventImage);
@@ -395,6 +400,23 @@ public class OrganizationController {
 	        }
 
 	    }
+	 
+		@RequestMapping(method = RequestMethod.GET, value="/{idOrganization}/venues/{idVenue}/events/{idEvent}/images", produces = MediaType.APPLICATION_JSON_VALUE)
+		@ResponseBody
+		public ResponseEntity<List<Resource<EventImage>>> getEventImages(@PathVariable("idEvent") int eventId) {
+			ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+			JdbcEventImageDaoImpl jdbcEventImageDao = ctx.getBean("jdbcEventImageDaoImpl", JdbcEventImageDaoImpl.class);
+			List<EventImage> eventImages = jdbcEventImageDao.getAllEventImagesByEventId(eventId);
+			EventImageResourceAssembler eira = new EventImageResourceAssembler();
+			List<Resource<EventImage>> resources = new ArrayList<Resource<EventImage>>();
+			for (int i=0;i<eventImages.size();i++) {
+				Resource<EventImage> resource = eira.toResource(eventImages.get(i));
+				resources.add(resource);
+			}
+			ResponseEntity<List<Resource<EventImage>>> response = new ResponseEntity<List<Resource<EventImage>>>(resources, HttpStatus.OK);
+			((ConfigurableApplicationContext)ctx).close();
+			return response;
+		}	
 
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/{idOrganization}/venues/{idVenue}/events/{idEvent}/glists", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -589,5 +611,44 @@ public class OrganizationController {
 	//TODO - /public/venues/{id}/events/{id}/glists/0/reservations - PUT ONLY
 	
 	//TODO - /public/reservation/{userId}
+	
+	public static class DeleteDirectory {
+		
+		public static void DeleteDirectoryAndFiles(File rootDir) throws Exception {
+			
+			if (!rootDir.exists()) {
+				return;
+			} else {
+				try {
+					Delete(rootDir);
+				} catch (Exception e) {
+					throw e;
+				}
+			}
+			
+			
+		}
+		
+		public static void Delete(File file) {
+			
+			if (file.isDirectory()) {
+				if(file.list().length == 0) {
+					file.delete();
+				} else {
+					String files[] = file.list();
+		        	for (String temp : files) {
+		        		File fileDelete = new File(file, temp);
+		         	     Delete(fileDelete);
+		         	}
+		        	if(file.list().length==0){
+		        		file.delete();
+		        	}
+				}
+			} else {	
+				file.delete();
+			}
+		}
+	}
+	
 	
 }
