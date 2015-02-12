@@ -14,6 +14,7 @@ public class Reservation {
 	int userId; //optional
 	boolean arrived;
 	String status;
+	String addedBy;
 	
 	public int getId() {
 		return id;
@@ -86,6 +87,12 @@ public class Reservation {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getAddedBy() {
+		return addedBy;
+	}
+	public void setAddedBy(String addedBy) {
+		this.addedBy = addedBy;
 	}
 	
 }

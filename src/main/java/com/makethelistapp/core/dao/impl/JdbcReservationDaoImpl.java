@@ -77,6 +77,7 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 			reservation.setGlistId((int) row.get("glistId"));			
 			reservation.setArrived((boolean) row.get("reservationArrived"));
 			reservation.setStatus((String) row.get("reservationStatus"));
+			reservation.setAddedBy((String) row.get("addedBy"));
 			reservations.add(reservation);
 		}
 		return reservations;
@@ -101,8 +102,8 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 	@Override
 	public int updateReservation(final Reservation reservation) {
 
-		final String sql = "INSERT INTO `reservation` (`idReservation`, `reservationFirstName`, `reservationLastName`, `reservationFreeCover`, `reservationHalfCover`, `reservationNumGuests`, `reservationPayCover`, `glistId`, `userId`, `reservationArrived`, `reservationStatus`,`reservationNote`)  "
-				+ "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
+		final String sql = "INSERT INTO `reservation` (`idReservation`, `reservationFirstName`, `reservationLastName`, `reservationFreeCover`, `reservationHalfCover`, `reservationNumGuests`, `reservationPayCover`, `glistId`, `userId`, `reservationArrived`, `reservationStatus`,`reservationNote`, `addedBy`)  "
+				+ "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"
 				+ "ON DUPLICATE KEY UPDATE"
 				+ "`reservationFirstName` = VALUES(`reservationFirstName`),"
 				+ "`reservationLastName` = VALUES(`reservationLastName`),"
@@ -114,7 +115,8 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 				+ "`userId` = VALUES(`userId`),"
 				+ "`reservationArrived` = VALUES(`reservationArrived`),"
 				+ "`reservationStatus` = VALUES(`reservationStatus`),"
-				+ "`reservationNote` = VALUES(`reservationNote`)";
+				+ "`reservationNote` = VALUES(`reservationNote`),"
+				+ "`addedBy` = VALUES(`addedBy`)";
 		
 		if (reservation.getId() == 0) {
 			KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -136,6 +138,7 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 	                ps.setBoolean(10, reservation.isArrived());
 	                ps.setString(11, reservation.getStatus());
 	                ps.setString(12, reservation.getNote());
+	                ps.setString(13, reservation.getAddedBy());
 
 	                return ps;
 	            }
@@ -162,7 +165,8 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 	                ps.setBoolean(10, reservation.isArrived());
 	                ps.setString(11, reservation.getStatus());
 	                ps.setString(12, reservation.getNote());
-
+	                ps.setString(13, reservation.getAddedBy());
+	                
 	                return ps;
 	            }
 	        });
@@ -191,6 +195,7 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 			reservation.setUserId(rs.getInt("userId"));
 			reservation.setArrived(rs.getBoolean("reservationArrived"));
 			reservation.setStatus(rs.getString("reservationStatus"));
+			reservation.setAddedBy(rs.getString("addedBy"));
 			return reservation;
 		}
 		

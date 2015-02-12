@@ -321,12 +321,8 @@ public class OrganizationController {
 		}
 		
 		try {
-
 			jdbcEventDao.deleteEventById(event.getId());
-
 			((ConfigurableApplicationContext)ctx).close();
-			
-			//TODO - delete directory
 			String dir = CoreConfig.PATH_TO_FOLDER + "/useruploads/organization/" + Integer.toString(orgId) + "/venues/" + Integer.toString(venueId) + "/events/" + Integer.toString(eventId);
 			File rootDir = new File(dir);
 			DeleteDirectory.DeleteDirectoryAndFiles(rootDir);
