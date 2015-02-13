@@ -12,7 +12,7 @@ public class Reservation {
 	String note;
 	int glistId;
 	int userId; //optional
-	boolean arrived;
+	int arrived;
 	String status;
 	String addedBy;
 	
@@ -76,10 +76,10 @@ public class Reservation {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-	public boolean isArrived() {
+	public int getArrived() {
 		return arrived;
 	}
-	public void setArrived(boolean arrived) {
+	public void setArrived(int arrived) {
 		this.arrived = arrived;
 	}
 	public String getStatus() {

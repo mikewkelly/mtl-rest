@@ -75,7 +75,7 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 			}	
 			reservation.setNote((String) row.get("reservationNote"));
 			reservation.setGlistId((int) row.get("glistId"));			
-			reservation.setArrived((boolean) row.get("reservationArrived"));
+			reservation.setArrived((int) row.get("reservationArrived"));
 			reservation.setStatus((String) row.get("reservationStatus"));
 			reservation.setAddedBy((String) row.get("addedBy"));
 			reservations.add(reservation);
@@ -135,7 +135,7 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 	                ps.setInt(7, reservation.getPayCover());
 	                ps.setInt(8, reservation.getGlistId());
 	                ps.setInt(9, reservation.getUserId());
-	                ps.setBoolean(10, reservation.isArrived());
+	                ps.setInt(10, reservation.getArrived());
 	                ps.setString(11, reservation.getStatus());
 	                ps.setString(12, reservation.getNote());
 	                ps.setString(13, reservation.getAddedBy());
@@ -162,7 +162,7 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 	                ps.setInt(7, reservation.getPayCover());
 	                ps.setInt(8, reservation.getGlistId());
 	                ps.setInt(9, reservation.getUserId());
-	                ps.setBoolean(10, reservation.isArrived());
+	                ps.setInt(10, reservation.getArrived());
 	                ps.setString(11, reservation.getStatus());
 	                ps.setString(12, reservation.getNote());
 	                ps.setString(13, reservation.getAddedBy());
@@ -193,7 +193,7 @@ public class JdbcReservationDaoImpl implements JdbcReservationDao {
 			reservation.setNote(rs.getString("reservationNote"));
 			reservation.setGlistId(rs.getInt("glistId"));
 			reservation.setUserId(rs.getInt("userId"));
-			reservation.setArrived(rs.getBoolean("reservationArrived"));
+			reservation.setArrived(rs.getInt("reservationArrived"));
 			reservation.setStatus(rs.getString("reservationStatus"));
 			reservation.setAddedBy(rs.getString("addedBy"));
 			return reservation;
